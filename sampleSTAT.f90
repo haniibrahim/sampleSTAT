@@ -17,21 +17,21 @@
 !    1.0       Ibrahim, Hani      05/29/2006 Original code
 !
 ! Processing:
-!    Data has to be in a column and is read from Stdin. 
+!    Data has to be in a column and is read from Stdin.
 !
 !
-!    
+!
 
 MODULE PrgMod
     USE SysConst
     USE SampleStatistics
-    
+
     IMPLICIT NONE
-    
+
     INTEGER, PARAMETER :: StdErr = 0 ! Standard Error Unit (here 0)
-   
+
 CONTAINS
-!----------------------------------------------------------------------   
+!----------------------------------------------------------------------
    SUBROUTINE ReadInVec(Dat_ptr, N, Error)
    ! Read in data from pipe, keyboard or command-line redirection and store the data
    ! in a real pointer vector.
@@ -43,21 +43,21 @@ CONTAINS
                                                          !      1 -> open file error
                                                          !      2 -> read data error
                                                          !      3 -> alloc error
-        
+
       INTEGER                         :: AllocStat       ! Allocate status
       INTEGER                         :: IOStatus        ! I/O status
       REAL(KIND=DP)                   :: Temp            ! Temp. storage of data
       INTEGER                         :: I               ! Loop index
       INTEGER                         :: Scratch_ID = 15 ! Unit ID for scratchfile
-      
+
       Error = 0                                          ! Set error flag -> no error
       N = 0                                              ! Set Counter = 0
       NULLIFY(Dat_ptr)
-      
+
       OPEN(Scratch_ID, STATUS='SCRATCH', IOSTAT=IOStatus)
-  
-      file_io: IF (IOStatus == 0) THEN      ! successfully opened 
-         handle_data: DO 
+
+      file_io: IF (IOStatus == 0) THEN      ! successfully opened
+         handle_data: DO
             READ(*,*, IOSTAT=IOStatus) Temp ! read from stdin/pipe ...
             IF (IOStatus < 0) EXIT          ! EOF reached
             count_n: IF (IOStatus > 0) THEN ! read error
@@ -71,7 +71,7 @@ CONTAINS
          Error   = 1                        ! open error
       END IF file_io
 
-      err_chk: IF (Error == 0) THEN   
+      err_chk: IF (Error == 0) THEN
          ALLOCATE(Dat_ptr(N), STAT=AllocStat)! alloc output pointer
          alloc: IF (AllocStat /= 0) THEN     ! alloc error
             Error = 3
@@ -79,32 +79,32 @@ CONTAINS
             REWIND(Scratch_ID)               ! Rewind scratch file
             readin: Do I=1, N                ! Read values from scratch file and store them in Dat_ptr
                READ(Scratch_ID,*) Dat_ptr(I)
-            END DO readin
+         END DO readin
          END IF alloc
       END IF err_chk
-      
+
    END SUBROUTINE ReadInVec
-!----------------------------------------------------------------------   
+!----------------------------------------------------------------------
    SUBROUTINE Foo()
       IMPLICIT NONE
       WRITE(StdErr,*) 'Option not implemented yet'
    END SUBROUTINE Foo
-!----------------------------------------------------------------------   
+!----------------------------------------------------------------------
    SUBROUTINE Version()
    ! Write version information to stdout
       IMPLICIT NONE
-      WRITE(*,'(/,5(A/))') & 
+      WRITE(*,'(/,5(A/))') &
       'sampleSTAT - Version 1.0 - 06/28/2007',&
       'For information, please contact: Hani Andreas Ibrahim (hani.ibrahim@gmx.de)',&
       'sampleSTAT comes with NO WARRANTY, to the extent permitted by law. You may ',&
       'redistribute copies of sampleSTAT under the terms of the GNU General Public ',&
       'License, refer <www.gnu.org/licenses/gpl.html> for details.'
    END SUBROUTINE Version
-!----------------------------------------------------------------------   
+!----------------------------------------------------------------------
    SUBROUTINE Help()
    ! Write help page to stdout
       WRITE(*,'(/,3(A/),/,7(A/),/,(3(A/)),/,(5(A/)),/)')&
-      'sampleSTAT performs tests for statistical samples:',& 
+      'sampleSTAT performs tests for statistical samples:',&
       '   Aritmetic Mean, Range of Dispersion of values and mean based on t-factor,', &
       '   Standard Deviation, Minimum, Maximum.', &
       'Usage: sampeSTAT [-hv] -s X [<inputfile] [>outputfile]',&
@@ -130,11 +130,11 @@ PROGRAM sample_stat
 
    USE SysConst
    USE SampleStatistics
-   USE PrgMod    ! ReadInVec
+   USE PrgMod     ! ReadInVec
    USE Sng        ! [libsng] Command-line parsing
 
    IMPLICIT NONE
-   
+
    INTEGER                                  :: I                         ! Loop index
    INTEGER                                  :: ReadErr, AllocErr         ! error variables
    REAL(KIND=DP), DIMENSION(:), POINTER     :: Values_ptr                ! Data values
@@ -144,7 +144,7 @@ PROGRAM sample_stat
    CHARACTER(LEN=6)                         :: SensMsg                   ! statistival sensitivity string
    INTEGER                                  :: MaxNum                    ! Max. numbers of lines for table of report
    REAL(KIND=DP)                            :: StrayAreaResult           ! Stray Area of single values depending on stat. sens.
-   
+
   ! Command-line variables
    character(16)                            ::arg_val            ! [sng] Command line argument value
    character(16)                            ::opt_sng            ! [sng] Option string
@@ -152,12 +152,12 @@ PROGRAM sample_stat
    integer                                  ::arg_idx            ! [idx] Counting index
    integer                                  ::arg_nbr            ! [nbr] Number of command line arguments
    integer                                  ::opt_lng            ! [nbr] Length of option
-   
+
    ! Command-line option switches
    LOGICAL                                  :: LogSens =.FALSE.  ! Value "Sens" commited: true/false
    LOGICAL                                  :: LogHlp  =.FALSE.  ! Switch "help"
    LOGICAL                                  :: LogVer  =.FALSE.  ! Switch "version"
-  
+
 
    ! Error messages
    CHARACTER(Len=*), PARAMETER              :: DeallocError = 'Deallocation error!'
@@ -168,7 +168,7 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: R_OpnError   = 'Data file open error!'
    CHARACTER(Len=*), PARAMETER              :: R_ReadError  = 'Data file read error!'
    CHARACTER(Len=*), PARAMETER              :: R_AllocError = 'Data file allocation error!'
-   
+
    !Report strings
    CHARACTER(Len=*), PARAMETER              :: Rpt_00       = '    ' ! left margin
    CHARACTER(Len=*), PARAMETER              :: Rpt_01       = 'sampleSTAT - Statistics for Sampling Distributions'
@@ -184,28 +184,28 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: Sens0Msg     = ' 95%'
    CHARACTER(Len=*), PARAMETER              :: Sens1Msg     = ' 99%'
    CHARACTER(Len=*), PARAMETER              :: Sens2Msg     = ' 99,9%'
-   
+
    ! Nullify pointer(s)
    NULLIFY(Values_ptr)
 
 ! --- Command-line parsing
    arg_nbr=command_argument_count() ! [nbr] Number of command line arguments
    arg_idx=1 ! [idx] Counting index
-   
+
    cmd_ln: do while (arg_idx <= arg_nbr)
-      
+
       call ftn_getarg_wrp(arg_idx,arg_val) ! [sbr] Call getarg, increment arg_idx
-      
+
       dsh_key1=arg_val(1:1) ! First character of option (e.g. -)
       dsh_key2=arg_val(1:2) ! First two characters of option (e.g. --)
       opt_lng=ftn_opt_lng_get(arg_val) ! [nbr] Length of option
-      
+
       if (opt_lng <= 0) stop "Long option has no name"
-      
+
       ! Handle long options
       lng_cmd: IF (dsh_key2 == '--') THEN
          opt_sng=arg_val(3:2+opt_lng) ! Option string without --
-         
+
          opt: IF (opt_sng == 'sens' ) THEN         ! Statistical sensitivity (/ 0, 1, 2 /)
             CALL ftn_arg_get(arg_idx,arg_val,Sens)
             LogSens = .TRUE.
@@ -217,12 +217,12 @@ PROGRAM sample_stat
             arg_idx=arg_idx-1 ! [idx] Counting index
             CALL ftn_getarg_err(arg_idx,arg_val) ! [sbr] Error handler for getarg()
          END IF opt ! endif option is recognized
-         
+
          ! Jump to top of while loop
          CYCLE cmd_ln! C, F77, and F90 use 'continue', 'goto', and 'cycle'
-         
+
       END IF lng_cmd ! endif long option
-      
+
       ! Short option with parameters (e.g. -s 2)
       s_par: if (dsh_key2 == '-s') then
          call ftn_arg_get(arg_idx, arg_val, Sens) ! Read parameter of '-s'
@@ -231,8 +231,8 @@ PROGRAM sample_stat
       ELSE IF (dsh_key2 == '/?') THEN
          LogHlp = .TRUE.
       end if s_par
-      
-      
+
+
       ! Handle short options
       !~ short_cmd: IF (((dsh_key1 == "-") .OR. (dsh_key1 == '/')) .AND. (dsh_key2 /= '--')) THEN
       short_cmd: IF ((dsh_key1 == "-") .AND. (dsh_key2 /= '--')) THEN
@@ -248,28 +248,28 @@ PROGRAM sample_stat
          end do
          cycle cmd_ln ! Next option
       END IF short_cmd
-      
+
    END DO cmd_ln             ! end while (arg_idx <= arg_nbr)
-   
+
 ! --- Examine committed options, read in and proceed data
    IF (arg_nbr == 0) THEN                                       ! If no arguments are committed display version and help info
       CALL Help()
       STOP
    END IF
-   
+
    ! Quit, if sensless options are committed ...
-                   
-   
+
+
    ! Print help- or version-screen if right option was committed
    IF (LogHlp) CALL Help()
    IF (LogVer) CALL Version()
    IF (LogHlp .OR. LogVer) STOP ! Avoid further processing after print help or version
-   
+
    IF (Sens > 2 .OR. Sens < 0) STOP SensError                   ! Sens has to be 0, 1, 2
    IF (LogSens) THEN  !-------------------------------------------------------- Report
       ! Read in data
       CALL ReadInVec(Values_ptr, N, ReadErr)
-      ! Data file error handling 
+      ! Data file error handling
       IF (ReadErr == 1) STOP R_OpnError
       IF (ReadErr == 2) STOP R_ReadError
       IF (ReadErr == 3) STOP R_AllocError
@@ -300,7 +300,7 @@ PROGRAM sample_stat
    ELSE
       STOP OptError
    END IF
-   
+
 ! --- Deallocate all dynamic arrays and pointers
    IF (ASSOCIATED(Values_ptr)) DEALLOCATE(Values_ptr, STAT=AllocErr)
    IF (AllocErr /= 0) STOP DeallocError
