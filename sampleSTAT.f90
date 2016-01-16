@@ -107,16 +107,16 @@ CONTAINS
       'sampleSTAT performs tests for statistical samples:',&
       '   Aritmetic Mean, Range of Dispersion of values and mean based on t-factor,', &
       '   Standard Deviation, Minimum, Maximum.', &
-      'Usage: sampeSTAT [-hv] -s X [<inputfile] [>outputfile]',&
+      'Usage: sampeSTAT [-hv] -l X [<inputfile] [>outputfile]',&
       '  -h    --help /?   Print this help screen',&
       '  -v    --version   Print version information',&
-      '  -s X  --sens=X    Set confidence level:',&
+      '  -l X  --level=X   Set confidence level:',&
       '                    X=0 conf. level: 95%',&
       '                    X=1 conf. level: 99%',&
       '                    X=2 conf. level: 99.9%',&
       'Examples:',&
-      '  sampleSTAT -s 0 <mydata.dat',&
-      '  sampleSTAT --sens=1 <mydata.dat >results.txt',&
+      '  sampleSTAT -l 0 <mydata.dat',&
+      '  sampleSTAT --level=1 <mydata.dat >results.txt',&
       'Input data:',&
       '  Data has to be committed in a one column form, like:',&
       '     22.43',&
@@ -139,12 +139,11 @@ PROGRAM sample_stat
    INTEGER                                  :: ReadErr, AllocErr         ! error variables
    REAL(KIND=DP), DIMENSION(:), POINTER     :: Values_ptr                ! Data values
    INTEGER                                  :: N                         ! Numbers of values
-   INTEGER                                  :: Sens = -1                 ! Statistical senitivity ...
+   INTEGER                                  :: Level = -1                 ! confidence level ...
                                                                          ! ... for "OutlierOut" routine
-   CHARACTER(LEN=6)                         :: SensMsg                   ! statistival sensitivity string
+   CHARACTER(LEN=6)                         :: LevelMsg                   ! confidence level string
    INTEGER                                  :: MaxNum                    ! Max. numbers of lines for table of report
-   REAL(KIND=DP)                            :: StrayAreaResult           ! Stray Area of single values depending on stat. sens.
-
+   REAL(KIND=DP)                            :: StrayAreaResult           ! Stray Area of single values depending on conf. level
   ! Command-line variables
    character(16)                            ::arg_val            ! [sng] Command line argument value
    character(16)                            ::opt_sng            ! [sng] Option string
@@ -154,7 +153,7 @@ PROGRAM sample_stat
    integer                                  ::opt_lng            ! [nbr] Length of option
 
    ! Command-line option switches
-   LOGICAL                                  :: LogSens =.FALSE.  ! Value "Sens" commited: true/false
+   LOGICAL                                  :: LogLevel =.FALSE.  ! Value "Level" commited: true/false
    LOGICAL                                  :: LogHlp  =.FALSE.  ! Switch "help"
    LOGICAL                                  :: LogVer  =.FALSE.  ! Switch "version"
 
@@ -163,7 +162,7 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: DeallocError = 'Deallocation error!'
    CHARACTER(Len=*), PARAMETER              :: AllocError   = 'Allocation error!'
    CHARACTER(Len=*), PARAMETER              :: LngOptErr    = 'Long option has no name!'
-   CHARACTER(Len=*), PARAMETER              :: SensError    = 'Wrong statistical sensitivity committed! Refer "samplestat --help"!'
+   CHARACTER(Len=*), PARAMETER              :: LevelError    = 'Wrong confidence level committed! Refer "samplestat --help"!'
    CHARACTER(Len=*), PARAMETER              :: OptError     = 'No meaningful options committed! Refer "samplestat --help"!'
    CHARACTER(Len=*), PARAMETER              :: R_OpnError   = 'Data file open error!'
    CHARACTER(Len=*), PARAMETER              :: R_ReadError  = 'Data file read error!'
@@ -181,9 +180,9 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: Rpt_08       = 'Standard Deviation          : '
    CHARACTER(Len=*), PARAMETER              :: Rpt_09       = 'Minimum                     : '
    CHARACTER(Len=*), PARAMETER              :: Rpt_10       = 'Maximum                     : '
-   CHARACTER(Len=*), PARAMETER              :: Sens0Msg     = ' 95%'
-   CHARACTER(Len=*), PARAMETER              :: Sens1Msg     = ' 99%'
-   CHARACTER(Len=*), PARAMETER              :: Sens2Msg     = ' 99,9%'
+   CHARACTER(Len=*), PARAMETER              :: Level0Msg     = ' 95%'
+   CHARACTER(Len=*), PARAMETER              :: Level1Msg     = ' 99%'
+   CHARACTER(Len=*), PARAMETER              :: Level2Msg     = ' 99,9%'
 
    ! Nullify pointer(s)
    NULLIFY(Values_ptr)
@@ -206,9 +205,9 @@ PROGRAM sample_stat
       lng_cmd: IF (dsh_key2 == '--') THEN
          opt_sng=arg_val(3:2+opt_lng) ! Option string without --
 
-         opt: IF (opt_sng == 'sens' ) THEN         ! Statistical sensitivity (/ 0, 1, 2 /)
-            CALL ftn_arg_get(arg_idx,arg_val,Sens)
-            LogSens = .TRUE.
+         opt: IF (opt_sng == 'level' ) THEN         ! confidence level (/ 0, 1, 2 /)
+            CALL ftn_arg_get(arg_idx,arg_val,Level)
+            LogLevel = .TRUE.
          ELSE IF (opt_sng == 'version' ) THEN      ! Print version
             LogVer = .TRUE.
          ELSE IF (opt_sng == 'help' ) THEN         ! Print help page
@@ -223,10 +222,10 @@ PROGRAM sample_stat
 
       END IF lng_cmd ! endif long option
 
-      ! Short option with parameters (e.g. -s 2)
-      s_par: if (dsh_key2 == '-s') then
-         call ftn_arg_get(arg_idx, arg_val, Sens) ! Read parameter of '-s'
-         LogSens = .TRUE.
+      ! Short option with parameters (e.g. -l 2)
+      s_par: if (dsh_key2 == '-l') then
+         call ftn_arg_get(arg_idx, arg_val, Level) ! Read parameter of '-l'
+         LogLevel = .TRUE.
          cycle cmd_ln ! Next option
       ELSE IF (dsh_key2 == '/?') THEN
          LogHlp = .TRUE.
@@ -265,23 +264,23 @@ PROGRAM sample_stat
    IF (LogVer) CALL Version()
    IF (LogHlp .OR. LogVer) STOP ! Avoid further processing after print help or version
 
-   IF (Sens > 2 .OR. Sens < 0) STOP SensError                   ! Sens has to be 0, 1, 2
-   IF (LogSens) THEN  !-------------------------------------------------------- Report
+   IF (Level > 2 .OR. Level < 0) STOP LevelError                   ! Level has to be 0, 1, 2
+   IF (LogLevel) THEN  !-------------------------------------------------------- Report
       ! Read in data
       CALL ReadInVec(Values_ptr, N, ReadErr)
       ! Data file error handling
       IF (ReadErr == 1) STOP R_OpnError
       IF (ReadErr == 2) STOP R_ReadError
       IF (ReadErr == 3) STOP R_AllocError
-      ! Stat. sensitivity messages for report
-      IF (Sens == 0) THEN ! Strayarea of the single values, stat. sec. 95%
-         SensMsg = Sens0Msg
+      ! confidence level messages for report
+      IF (Level == 0) THEN ! Strayarea of the single values, stat. sec. 95%
+         LevelMsg = Level0Msg
          StrayAreaResult = StrayArea(Values_ptr, N, 'lo')
-      ELSE IF (Sens == 1) THEN ! Strayarea of the single values, stat. sec. 99%
-         SensMsg = Sens1Msg
+      ELSE IF (Level == 1) THEN ! Strayarea of the single values, stat. sec. 99%
+         LevelMsg = Level1Msg
          StrayAreaResult = StrayArea(Values_ptr, N, 'md')
-      ELSE IF (Sens == 2) THEN ! Strayarea of the single values, stat. sec. 99,9%
-         SensMsg = Sens2Msg
+      ELSE IF (Level == 2) THEN ! Strayarea of the single values, stat. sec. 99,9%
+         LevelMsg = Level2Msg
          StrayAreaResult = StrayArea(Values_ptr, N, 'hi')
       END IF
       ! Report message
@@ -290,7 +289,7 @@ PROGRAM sample_stat
       WRITE(*,*) Rpt_00, Rpt_02                             ! Underline
       WRITE(*,*) Rpt_00, Rpt_03, N                          ! Numbers of values
       WRITE(*,*) Rpt_00, Rpt_04, ArithMean(Values_ptr, N)   ! Mean
-      WRITE(*,*) Rpt_00, Rpt_05, TRIM(SensMsg)              ! Stat. sensitivity
+      WRITE(*,*) Rpt_00, Rpt_05, TRIM(LevelMsg)              ! confidence level
       WRITE(*,*) Rpt_00, Rpt_06, StrayAreaResult            ! Strayarea of the single values
       WRITE(*,*) Rpt_00, Rpt_07, StrayAreaResult/SQRT(REAL(N,KIND=DP))    ! TrustArea, Strayarea of mean
       WRITE(*,*) Rpt_00, Rpt_08, StdDev(Values_ptr, N)      ! Standard deviation
