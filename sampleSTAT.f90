@@ -139,9 +139,9 @@ PROGRAM sample_stat
    INTEGER                                  :: ReadErr, AllocErr         ! error variables
    REAL(KIND=DP), DIMENSION(:), POINTER     :: Values_ptr                ! Data values
    INTEGER                                  :: N                         ! Numbers of values
-   INTEGER                                  :: Level = -1                 ! confidence level ...
+   INTEGER                                  :: Level = -1                ! confidence level ...
                                                                          ! ... for "OutlierOut" routine
-   CHARACTER(LEN=6)                         :: LevelMsg                   ! confidence level string
+   CHARACTER(LEN=6)                         :: LevelMsg                  ! confidence level string
    INTEGER                                  :: MaxNum                    ! Max. numbers of lines for table of report
    REAL(KIND=DP)                            :: StrayAreaResult           ! Stray Area of single values depending on conf. level
   ! Command-line variables
@@ -153,7 +153,7 @@ PROGRAM sample_stat
    integer                                  ::opt_lng            ! [nbr] Length of option
 
    ! Command-line option switches
-   LOGICAL                                  :: LogLevel =.FALSE.  ! Value "Level" commited: true/false
+   LOGICAL                                  :: LogLevel =.FALSE. ! Value "Level" commited: true/false
    LOGICAL                                  :: LogHlp  =.FALSE.  ! Switch "help"
    LOGICAL                                  :: LogVer  =.FALSE.  ! Switch "version"
 
@@ -162,7 +162,7 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: DeallocError = 'Deallocation error!'
    CHARACTER(Len=*), PARAMETER              :: AllocError   = 'Allocation error!'
    CHARACTER(Len=*), PARAMETER              :: LngOptErr    = 'Long option has no name!'
-   CHARACTER(Len=*), PARAMETER              :: LevelError    = 'Wrong confidence level committed! Refer "samplestat --help"!'
+   CHARACTER(Len=*), PARAMETER              :: LevelError   = 'Wrong confidence level committed! Refer "samplestat --help"!'
    CHARACTER(Len=*), PARAMETER              :: OptError     = 'No meaningful options committed! Refer "samplestat --help"!'
    CHARACTER(Len=*), PARAMETER              :: R_OpnError   = 'Data file open error!'
    CHARACTER(Len=*), PARAMETER              :: R_ReadError  = 'Data file read error!'
@@ -180,9 +180,9 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: Rpt_08       = 'Standard Deviation          : '
    CHARACTER(Len=*), PARAMETER              :: Rpt_09       = 'Minimum                     : '
    CHARACTER(Len=*), PARAMETER              :: Rpt_10       = 'Maximum                     : '
-   CHARACTER(Len=*), PARAMETER              :: Level0Msg     = ' 95%'
-   CHARACTER(Len=*), PARAMETER              :: Level1Msg     = ' 99%'
-   CHARACTER(Len=*), PARAMETER              :: Level2Msg     = ' 99,9%'
+   CHARACTER(Len=*), PARAMETER              :: Level0Msg    = '95%'
+   CHARACTER(Len=*), PARAMETER              :: Level1Msg    = '99%'
+   CHARACTER(Len=*), PARAMETER              :: Level2Msg    = '99,9%'
 
    ! Nullify pointer(s)
    NULLIFY(Values_ptr)
@@ -287,9 +287,9 @@ PROGRAM sample_stat
       WRITE(*,*)
       WRITE(*,*) Rpt_00, Rpt_01                             ! Titel
       WRITE(*,*) Rpt_00, Rpt_02                             ! Underline
-      WRITE(*,*) Rpt_00, Rpt_03, N                          ! Numbers of values
+      WRITE(*,'(3A,i0)') ' ', Rpt_00, Rpt_03, N             ! Numbers of values
       WRITE(*,*) Rpt_00, Rpt_04, ArithMean(Values_ptr, N)   ! Mean
-      WRITE(*,*) Rpt_00, Rpt_05, TRIM(LevelMsg)              ! confidence level
+      WRITE(*,'(4A)') ' ', Rpt_00, Rpt_05, TRIM(LevelMsg)   ! confidence level
       WRITE(*,*) Rpt_00, Rpt_06, StrayAreaResult            ! Strayarea of the single values
       WRITE(*,*) Rpt_00, Rpt_07, StrayAreaResult/SQRT(REAL(N,KIND=DP))    ! TrustArea, Strayarea of mean
       WRITE(*,*) Rpt_00, Rpt_08, StdDev(Values_ptr, N)      ! Standard deviation
