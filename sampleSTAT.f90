@@ -15,6 +15,8 @@
 !    Version   Programmer         Date       Description
 !    -------   ----------         ---------- -----------
 !    1.0       Ibrahim, Hani      05/29/2006 Original code
+!    1.1       Ibrahim, Hani      01/19/2016 Changed -s/--sens to -l/--level
+!                                            and some little cosmetic correct.
 !
 ! Processing:
 !    Data has to be in a column and is read from Stdin.
