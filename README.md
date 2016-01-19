@@ -1,6 +1,6 @@
 # sampleSTAT - Statistics for Sampling Distributions
 
-**sampleSTAT** is a command-line application to determine sampling distributions. It goes a lot further than arithmetic mean and standard deviation. It uses floating point variables according [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point) which make results portable (see Chap. Accurracy). sampleSTAT is written in Fortran 90.
+**sampleSTAT** is a command-line application to determine sampling distributions. It goes a lot further than arithmetic mean and standard deviation. It uses floating point variables according [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point) which make results portable (see Chap. Accuracy). sampleSTAT is written in Fortran 90.
 
 sampleSTAT is based on the German book *R.Kaiser, G. Gottschalk; "Elementare Tests zur Beurteilung von Meßdaten", BI Hochschultaschenbücher, Bd. 774, Mannheim 1972.*
 
@@ -31,7 +31,7 @@ The amount of single values (N) is a important degree to evaluate the security o
 
 ### Standard Deviation (s) ###
 
-The standard deviation is the most imformative quantity to specify the statistic quality of a measuring procedure but *s* itself does not say anything about the quality of the result but in combination with *n* you can calculate the range of dispersion.
+The standard deviation is the most informative quantity to specify the statistic quality of a measuring procedure but *s* itself does not say anything about the quality of the result but in combination with *n* you can calculate the range of dispersion.
 
 ### Range of Dispersion of Values (T) ###
 The range of dispersion of the values is calculated as `T = s * t`. (t = student factor, dependent on the statistic security P% (95%, 99%, 99.9%) and the degree of freedom `f = n - 1`. *f* and *t* are specified in the t-tables.
@@ -41,6 +41,8 @@ The range of dispersion of the values is calculated as `T = s * t`. (t = student
 ### Range of Dispersion of Mean ###
 
 This parameter tells how secure the mean is. It indicates the stray area of the mean and not of the raw values as *T* does.
+
+See chapter "Example" for more details.
 
 ## Accuracy
 
@@ -52,20 +54,20 @@ Type `sampleSTAT --help` for help:
 
 ```
 sampleSTAT performs tests for statistical samples:
-   Aritmetic Mean, Range of Dispersion of values and mean based on t-factor,
+   Arithmetic Mean, Range of Dispersion of values and mean based on t-factor,
    Standard Deviation, Minimum, Maximum.
 
 Usage: sampeSTAT [-hv] -s X [<inputfile] [>outputfile]
   -h    --help /?   Print this help screen
   -v    --version   Print version information
-  -s X  --sens=X    Set confidence level:
+  -l X  --level=X   Set confidence level:
                     X=0 conf. level: 95%
                     X=1 conf. level: 99%
                     X=2 conf. level: 99.9%
 
 Examples:
-  sampleSTAT -s 0 <mydata.dat
-  sampleSTAT --sens=1 <mydata.dat >results.txt
+  sampleSTAT -l 0 <mydata.dat
+  sampleSTAT --level=1 <mydata.dat >results.txt
 
 Input data:
   Data has to be committed in a one column form, like:
@@ -87,7 +89,7 @@ sample1.dat:
 ```
 
 ```
-$ sampleSTAT -s 0 <sample1.dat 
+$ sampleSTAT -l 0 <sample1.dat 
 
      sampleSTAT - Statistics for Sampling Distributions
      ==================================================
@@ -140,4 +142,4 @@ On Microsoft Windows:
 ```
 gfortran -static-libgfortran dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 sampleSTAT.f90 -o sampleSTAT.exe
 ```
-For a quick and dirty installation, copy `sampleSTAT.exe` into your WIndows folder or much better in another folder which is in your path.
+For a quick and dirty installation, copy `sampleSTAT.exe` into your Windows folder or much better in another folder which is in your path.
