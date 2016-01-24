@@ -127,47 +127,47 @@ CONTAINS
    
    
    
-   !~ FUNCTION GeoMean(X, N)
-   !~ ! Calculate the geometric mean
-      !~ IMPLICIT NONE
+   FUNCTION GeoMean(X, N)
+    ! Calculate the geometric mean
+       IMPLICIT NONE
       
-      !~ REAL(KIND=DP)                           :: GeoMean       ! geometric mean
-      !~ REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! array of value (vector)
-      !~ INTEGER, INTENT(IN)                     :: N             ! numbers of values
+       REAL(KIND=DP)                           :: GeoMean       ! geometric mean
+       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! array of value (vector)
+       INTEGER, INTENT(IN)                     :: N             ! numbers of values
       
-      !~ INTEGER                                 :: I             ! loop variable
-      !~ REAL(KIND=DP)                           :: Produkt       ! product of x(i)
+       INTEGER                                 :: I             ! loop variable
+       REAL(KIND=DP)                           :: Produkt       ! product of x(i)
 
-      !~ Produkt = 1.0_DP
+       Produkt = 1.0_DP
       
-      !~ DO I=1, N
-         !~ Produkt = Produkt * X(I)
-      !~ END DO
+       DO I=1, N
+          Produkt = Produkt * X(I)
+       END DO
       
-      !~ GeoMean = Produkt**(1.0_DP/REAL(N, KIND=DP))
-   !~ END FUNCTION GeoMean
+       GeoMean = Produkt**(1.0_DP/REAL(N, KIND=DP))
+    END FUNCTION GeoMean
    
    
    
-   !~ FUNCTION HarMean(X, N)
-   !~ ! Calculate the harmonic mean
-      !~ IMPLICIT NONE
+    FUNCTION HarMean(X, N)
+    ! Calculate the harmonic mean
+       IMPLICIT NONE
       
-      !~ REAL(KIND=DP)                           :: HarMean       ! harmonic mean
-      !~ REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! array of value (vector)
-      !~ INTEGER, INTENT(IN)                     :: N             ! numbers of values
+       REAL(KIND=DP)                           :: HarMean       ! harmonic mean
+       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! array of value (vector)
+       INTEGER, INTENT(IN)                     :: N             ! numbers of values
       
-      !~ INTEGER                                 :: I             ! loop variable
-      !~ REAL(KIND=DP)                           :: InvSum        ! inverse sum of x(i)
+       INTEGER                                 :: I             ! loop variable
+       REAL(KIND=DP)                           :: InvSum        ! inverse sum of x(i)
 
-      !~ InvSum = 0.0_DP
+       InvSum = 0.0_DP
       
-      !~ DO I=1, N
-         !~ InvSum = InvSum + 1._DP/X(I)
-      !~ END DO
+       DO I=1, N
+          InvSum = InvSum + 1._DP/X(I)
+       END DO
       
-      !~ HarMean = REAL(N, KIND=DP)/InvSum
-   !~ END FUNCTION HarMean
+       HarMean = REAL(N, KIND=DP)/InvSum
+    END FUNCTION HarMean
 
 
 
@@ -210,7 +210,7 @@ CONTAINS
     REAL(KIND=DP), DIMENSION(:), INTENT(IN)   :: X             ! IN: array of values (vector)
     
     INTEGER                                   :: I             ! Loop index
-    INTEGER 				      :: MinIdx = 1    ! Index of the min. value
+    INTEGER                   :: MinIdx = 1    ! Index of the min. value
     
     DO I=2, N
         IF (X(I) < X(MinIdx)) THEN
@@ -264,11 +264,11 @@ CONTAINS
       INTEGER, INTENT(IN)         :: N                         ! IN: numbers of values
       CHARACTER(LEN=2),INTENT(IN) :: P                         ! IN: statistical security 
                                                                !     (lo=95%, md=99%, hi=99.5%)
-							       
+                            
       INTEGER                     :: F, I, J, K                ! F = stat. degree of freedom,
                                                                ! I = row of t-table
                                                                ! J = column of t-table
-						                                       ! K = interpolation step
+                                                         ! K = interpolation step
       
       F     = N - 1 ! Calculate degree of freedom
       
@@ -276,35 +276,35 @@ CONTAINS
       SELECT CASE(P)
       CASE('lo')
         J = 2
-	  CASE('md')
-	    J = 3
-	  CASE('hi')
-	    J = 4
-	  CASE DEFAULT
-	    ! Wrong statistical security, choose "lo" for 95%, "md" for 99%, "hi" for 99.9%
-	    StudentFactor = -1.0_DP
+     CASE('md')
+       J = 3
+     CASE('hi')
+       J = 4
+     CASE DEFAULT
+       ! Wrong statistical security, choose "lo" for 95%, "md" for 99%, "hi" for 99.9%
+       StudentFactor = -1.0_DP
             RETURN
       END SELECT
       
       ! Pick the correct Student-factor out of the t-table and interpolate if necessary
       SELECT CASE(F)
       CASE(1:20)
-	    StudentFactor = TTable(F,J)
-	  CASE(21:50)
-	    K = INT(F/5)*5
-	    I = 20 + INT((F-20)/5)
-	    StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/5.0_DP*(F-K))
-	  CASE(51:100)
-	    K = F - 50
-	    I = 26
-	    StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/50.0_DP*K)
-	  CASE(101:800)
-	    K = INT(F/100)*100
-	    I = 26 + INT(F/100)
-	    StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/100.0_DP*(F-K))	    
-	  CASE(801:) ! infinite
-	    StudentFactor = TTable(35,J)
-	  CASE DEFAULT
+       StudentFactor = TTable(F,J)
+     CASE(21:50)
+       K = INT(F/5)*5
+       I = 20 + INT((F-20)/5)
+       StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/5.0_DP*(F-K))
+     CASE(51:100)
+       K = F - 50
+       I = 26
+       StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/50.0_DP*K)
+     CASE(101:800)
+       K = INT(F/100)*100
+       I = 26 + INT(F/100)
+       StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/100.0_DP*(F-K))       
+     CASE(801:) ! infinite
+       StudentFactor = TTable(35,J)
+     CASE DEFAULT
             ! Incorrect degree of freedom
             StudentFactor = -2.0_DP
             RETURN
