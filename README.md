@@ -109,7 +109,7 @@ x = 10.0; T = +/-10.9 for P = 95%; s = +/-4.243
 ```
 
 Result in words:
-*In the given sample distribution (sample 1) 95% of all values will be between 0 and 20.9 (range of dispersion of the values) but 63% between 5.8 and 14.2 (standard deviation => 63%). The mean "x" itself can spread between 14.08 and 5.92 (range of dispersion of the mean). *
+*In the given sample distribution (sample 1) 95% of all values will be between 0 and 20.9 (range of dispersion of the values) but 68% between 5.8 and 14.2 (standard deviation => 68%). The mean "x" itself can spread between 14.08 and 5.92 (range of dispersion of the mean). *
 
 
 
