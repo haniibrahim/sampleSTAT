@@ -31,7 +31,7 @@ MODULE PrgMod
 
     IMPLICIT NONE
 
-    INTEGER, PARAMETER :: StdErr = 0 ! Standard Error Unit (here 0)
+!    INTEGER, PARAMETER :: StdErr = 0 ! Standard Error Unit (here 0)
 
 CONTAINS
 !----------------------------------------------------------------------

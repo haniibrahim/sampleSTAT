@@ -3,7 +3,7 @@
 ! Purpose: Library of Fortran string manipulation routines
 
 ! Copyright (C) 1997--2014 Charlie Zender
-! License Summary: X11-style free, non-restrictive, non-copyleft. 
+! License Summary: X11-style free, non-restrictive, non-copyleft.
 ! Permission is hereby granted, free of charge, to any person obtaining a
 ! copy of this software and associated documentation files (the
 ! "Software"), to deal in the Software without restriction, including
@@ -35,7 +35,7 @@
 ! Irvine, CA 92697-3100
 
 ! These routines contain the functionality required to parse command-line arguments
-! http://www.winteracter.com/f2kcli/index.htm provides f2kcli module 
+! http://www.winteracter.com/f2kcli/index.htm provides f2kcli module
 ! required by some (non-UNIX) F9X compilers. F2K provides functions natively.
 ! A standalone test program, sng.F90, is used to demonstrate sng_mdl.F90
 
@@ -69,24 +69,27 @@
 
 module sng_mdl ! [mdl] String manipulation
 #ifdef F2KCLI
-  ! If Fortran2000 compiler does not have command_argument_count() and 
+  ! If Fortran2000 compiler does not have command_argument_count() and
   ! get_command_argument() intrinsics, then use Winteracter's f2kcli module
   use f2kcli ! [mdl] F2K Command-Line Interpreter (command_argument_count()...)
 #endif /* !F2KCLI */
+  use SysConst
+
   implicit none
+
   public ! [stt] Symbols are public unless individually qualified as private
   private::ftn_arg_get_dbl,ftn_arg_get_int,ftn_arg_get_lgc,ftn_arg_get_sng
   private::ftn_arg_get_flt
-  
+
   ! Overload command-line argument retrieval functions
   interface ftn_arg_get
      module procedure ftn_arg_get_dbl,ftn_arg_get_int,ftn_arg_get_lgc,ftn_arg_get_sng
-     
+
      module procedure ftn_arg_get_flt
   end interface ! ftn_arg_get
-  
+
 contains
-  
+
 #ifndef F2K
   ! Declare forward-compatible F2K functions
   integer function command_argument_count() ! [fnc] Fortran intrinsic (F2K)
@@ -99,11 +102,11 @@ contains
     command_argument_count=iargc()
     return
   end function command_argument_count
-  
+
   subroutine get_command_argument(arg_idx,arg_val)
     ! Purpose: Return specified command-line argument
     ! Standardized F2K replacement for F77/F9X iargc()
-    integer,intent(in)::arg_idx ! I [idx] Argument counter 
+    integer,intent(in)::arg_idx ! I [idx] Argument counter
     character(len=*),intent(out)::arg_val ! I/O [sng] String to copy into opt_val
     interface
        subroutine getarg(idx,val) ! [fnc] Fortran intrinsic
@@ -135,7 +138,7 @@ contains
     if (ftn_strlen < 0 .or. sng == '') ftn_strlen=0
     return
   end function ftn_strlen ! end ftn_strlen()
-  
+
   integer function ftn_opt_lng_get(sng)
     ! Purpose: Return length of option string preceding space or equals character
     ! Any preceding dashes are NOT counted towards option length
@@ -145,7 +148,7 @@ contains
     ! Usage:
     ! Call ftn_opt_lng_get with the full option string, e.g.,
     ! ftn_opt_lng_get('--dbg_lvl=5') and ftn_opt_lng_get will return the
-    ! length of the option string 
+    ! length of the option string
     ! opt_sng=arg_val(3:2+ftn_opt_lng_get(arg_val)) ! [sng] Option string
     ! if (opt_sng == 'dbg') then ...
     implicit none
@@ -174,7 +177,7 @@ contains
     if (ftn_opt_lng_get < 0 .or. sng == '') ftn_opt_lng_get=0
     return
   end function ftn_opt_lng_get                       ! end ftn_opt_lng_get()
-  
+
   subroutine ftn_getarg_wrp( & ! [sbr] Call getarg() and increment arg_idx
        arg_idx, & ! I/O [idx] Argument counter
        arg_val) ! I/O [sng] String to copy into opt_val
@@ -187,19 +190,19 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] String to copy into opt_val
     ! Output
     ! Local
     ! Main Code
     call get_command_argument(arg_idx,arg_val)
-    if (dbg_lvl >= dbg_io) write (6,'(2a,i2,2a)') prg_nm(1:ftn_strlsc(prg_nm)),   &
+    if (dbg_lvl >= dbg_io) write (stderr,'(2a,i2,2a)') prg_nm(1:ftn_strlsc(prg_nm)),   &
          ': DEBUG ftn_getarg_wrp() reports arg_idx = ',arg_idx,', arg_val = ',arg_val(1:len_trim(arg_val))
     ! Increment counter for next read
     arg_idx=arg_idx+1
     return
   end subroutine ftn_getarg_wrp
-  
+
   subroutine ftn_getarg_err( & ! [sbr] Error handler for getarg()
        arg_idx, & ! I/O [idx] Argument counter
        arg_val) ! I/O [sng] String to copy into opt_val
@@ -214,7 +217,7 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] String to copy into opt_val
     ! Output
     ! Local
@@ -222,23 +225,23 @@ contains
     ! integer exit_status       ! [enm] Program exit status (non-standard Fortran)
     ! Main Code
     arg_nbr=command_argument_count() ! [nbr] Number of command-line arguments
-    write (6,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)),': ERROR Option not recognized'
-    write (6,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)),': HINT Option syntax is nearly POSIX/GNU compliant:'
-    write (6,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+    write (stderr,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)),': ERROR Option not recognized'
+    write (stderr,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)),': HINT Option syntax is nearly POSIX/GNU compliant:'
+    write (stderr,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)), &
          ': Short option syntax is dash-key-space-value, e.g., -D 2'
-    write (6,'(3a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+    write (stderr,'(3a)') prg_nm(1:ftn_strlsc(prg_nm)), &
          ': Long option syntax is dash-dash-key-space-value, e.g., --dbg 2', &
          ', or dash-dash-key-equal-value, e.g., --dbg=2 (preferred)'
     ! Subtract 1 from arg_idx because rule is that arg_idx is incremented before option recognition is attempted
-    write (6,'(2a,i2,2a)') prg_nm(1:ftn_strlsc(prg_nm)),   &
+    write (stderr,'(2a,i2,2a)') prg_nm(1:ftn_strlsc(prg_nm)),   &
          ': DEBUG ftn_getarg_err() reports arg_idx = ',arg_idx,', arg_val = ',arg_val(1:len_trim(arg_val))
     if (arg_idx+1 <= arg_nbr) then
        arg_idx=arg_idx+1      ! [idx] Counting index
        call get_command_argument(arg_idx,arg_val)
-       write (6,'(2a,i2,2a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,i2,2a)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG Next argument value is arg_val(',arg_idx,') = ',arg_val
     else
-       write (6,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG No arguments follow this one'
     endif                     ! endif not last argument
     ! exit_status=-1            ! [enm] Program exit status (non-standard Fortran)
@@ -246,9 +249,9 @@ contains
     stop 'Exit on error from ftn_getarg_err()'
     return
   end subroutine ftn_getarg_err
-  
+
   ! Notes common to all arg_get() routines:
-  ! arg_val is assumed to be present as a command-line line option 
+  ! arg_val is assumed to be present as a command-line line option
   ! On input, first two characters of arg_val are assumed to be dashes,
   ! although this would not be too difficult to change.
   ! Routine accepts options specified in POSIX format: "--opt_sng val" or "--opt_sng=val" (preferred)
@@ -260,7 +263,7 @@ contains
   ! On input and output, arg_val holds entire option and value, e.g., "--opt_sng=73"
   ! Routines do not call getarg() to change arg_val and do not increment arg_idx
   ! Routines set optional logical argument opt_flg to true if called
-  
+
   subroutine ftn_arg_get_dbl( & ! [sbr] Process double-valued command-line argument
        arg_idx, & ! I/O [idx] Argument counter
        arg_val, & ! I/O [sng] Double to copy into opt_val
@@ -276,7 +279,7 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] Double to copy into opt_val
     ! Output
     real(selected_real_kind(p=12)),intent(out)::opt_val ! O [frc] Variable to receive copy of arg_val
@@ -291,7 +294,7 @@ contains
     arg_lng=len_trim(arg_val) ! [nbr] Length of argument
     opt_lng=ftn_opt_lng_get(arg_val) ! [nbr] Length of option
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() reports arg_idx = ',arg_idx,  &
             ', Full option = ''',arg_val(1:arg_lng),''', Length = ',arg_lng
     endif                     ! endif dbg
@@ -301,7 +304,7 @@ contains
        opt_cnj_is_spc=.false. ! [flg] Option conjunction is space character
        arg_val_srt_idx=3+opt_lng+1 ! [idx] Starting position of argument value
        if (dbg_lvl >= dbg_io) then
-          write (6,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+          write (stderr,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
                ': DEBUG '//sbr_nm//'() diassembles argument into Option = ''', &
                arg_val(3:2+opt_lng),''', conjunction is ''', &
                arg_val(3+opt_lng:3+opt_lng),''', argument = ''', &
@@ -311,7 +314,7 @@ contains
        opt_cnj_is_spc=.true.  ! [flg] Option conjunction is space character
        arg_val_srt_idx=1      ! [idx] Starting position of argument value
     endif                     ! endif
-    if (opt_cnj_is_spc) then 
+    if (opt_cnj_is_spc) then
        ! Obtain value of option by getting next command-line argument
        ! New arguments will alter input values of arg_idx,arg_val
        call get_command_argument(arg_idx,arg_val)
@@ -324,13 +327,13 @@ contains
     ! Read argument into double and return
     read (arg_val(arg_val_srt_idx:arg_lng),*) opt_val ! [frc] Variable to receive copy of arg_val
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() assigned argument value = ',opt_val
     endif                     ! endif
     if(present(opt_flg)) opt_flg=.true. ! [flg] Variable set by command-line
     return
   end subroutine ftn_arg_get_dbl
-  
+
   subroutine ftn_arg_get_flt( & ! [sbr] Process float-valued command-line argument
        arg_idx, & ! I/O [idx] Argument counter
        arg_val, & ! I/O [sng] Float to copy into opt_val
@@ -346,7 +349,7 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] Float to copy into opt_val
     ! Output
     real(selected_real_kind(p=6)),intent(out)::opt_val ! O [frc] Variable to receive copy of arg_val
@@ -361,7 +364,7 @@ contains
     arg_lng=len_trim(arg_val) ! [nbr] Length of argument
     opt_lng=ftn_opt_lng_get(arg_val) ! [nbr] Length of option
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() reports arg_idx = ',arg_idx,  &
             ', Full option = ''',arg_val(1:arg_lng),''', Length = ',arg_lng
     endif                     ! endif dbg
@@ -371,7 +374,7 @@ contains
        opt_cnj_is_spc=.false. ! [flg] Option conjunction is space character
        arg_val_srt_idx=3+opt_lng+1 ! [idx] Starting position of argument value
        if (dbg_lvl >= dbg_io) then
-          write (6,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+          write (stderr,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
                ': DEBUG '//sbr_nm//'() diassembles argument into Option = ''', &
                arg_val(3:2+opt_lng),''', conjunction is ''', &
                arg_val(3+opt_lng:3+opt_lng),''', argument = ''', &
@@ -381,7 +384,7 @@ contains
        opt_cnj_is_spc=.true.  ! [flg] Option conjunction is space character
        arg_val_srt_idx=1      ! [idx] Starting position of argument value
     endif                     ! endif
-    if (opt_cnj_is_spc) then 
+    if (opt_cnj_is_spc) then
        ! Obtain value of option by getting next command-line argument
        ! New arguments will alter input values of arg_idx,arg_val
        call get_command_argument(arg_idx,arg_val)
@@ -394,13 +397,13 @@ contains
     ! Read argument into float and return
     read (arg_val(arg_val_srt_idx:arg_lng),*) opt_val ! [frc] Variable to receive copy of arg_val
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() assigned argument value = ',opt_val
     endif                     ! endif
     if(present(opt_flg)) opt_flg=.true. ! [flg] Variable set by command-line
     return
   end subroutine ftn_arg_get_flt
-  
+
   subroutine ftn_arg_get_int( & ! [sbr] Process integer-valued command-line argument
        arg_idx, & ! I/O [idx] Argument counter
        arg_val, & ! I/O [sng] Integer to copy into opt_val
@@ -416,7 +419,7 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] Integer to copy into opt_val
     ! 20030429: Change opt_val to inout since dbg_lvl itself may be an opt_val but is referenced on LHS
     integer,intent(inout)::opt_val ! O [nbr] Variable to receive copy of arg_val
@@ -432,7 +435,7 @@ contains
     arg_lng=len_trim(arg_val) ! [nbr] Length of argument
     opt_lng=ftn_opt_lng_get(arg_val) ! [nbr] Length of option
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() reports arg_idx = ',arg_idx,  &
             ', Full option = ''',arg_val(1:arg_lng),''', Length = ',arg_lng
     endif                     ! endif dbg
@@ -442,7 +445,7 @@ contains
        opt_cnj_is_spc=.false. ! [flg] Option conjunction is space character
        arg_val_srt_idx=3+opt_lng+1 ! [idx] Starting position of argument value
        if (dbg_lvl >= dbg_io) then
-          write (6,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+          write (stderr,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
                ': DEBUG '//sbr_nm//'() diassembles argument into Option = ''', &
                arg_val(3:2+opt_lng),''', conjunction is ''', &
                arg_val(3+opt_lng:3+opt_lng),''', argument = ''', &
@@ -452,7 +455,7 @@ contains
        opt_cnj_is_spc=.true.  ! [flg] Option conjunction is space character
        arg_val_srt_idx=1      ! [idx] Starting position of argument value
     endif                     ! endif
-    if (opt_cnj_is_spc) then 
+    if (opt_cnj_is_spc) then
        ! Obtain value of option by getting next command-line argument
        ! New arguments will alter input values of arg_idx,arg_val
        call get_command_argument(arg_idx,arg_val)
@@ -465,13 +468,13 @@ contains
     ! Read argument into integer and return
     read (arg_val(arg_val_srt_idx:arg_lng),*) opt_val ! [nbr] Variable to receive copy of arg_val
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() assigned argument value = ',opt_val
     endif                     ! endif
     if(present(opt_flg)) opt_flg=.true. ! [flg] Variable set by command-line
     return
   end subroutine ftn_arg_get_int
-  
+
   subroutine ftn_arg_get_lgc( & ! [sbr] Process logical-valued command-line argument
        arg_idx, & ! I/O [idx] Argument counter
        arg_val, & ! I/O [sng] Logical to copy into opt_val
@@ -487,7 +490,7 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] Logical to copy into opt_val
     ! Output
     logical,intent(out)::opt_val ! O [flg] Variable to receive copy of arg_val
@@ -502,7 +505,7 @@ contains
     arg_lng=len_trim(arg_val) ! [nbr] Length of argument
     opt_lng=ftn_opt_lng_get(arg_val) ! [nbr] Length of option
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() reports arg_idx = ',arg_idx,  &
             ', Full option = ''',arg_val(1:arg_lng),''', Length = ',arg_lng
     endif                     ! endif dbg
@@ -512,7 +515,7 @@ contains
        opt_cnj_is_spc=.false. ! [flg] Option conjunction is space character
        arg_val_srt_idx=3+opt_lng+1 ! [idx] Starting position of argument value
        if (dbg_lvl >= dbg_io) then
-          write (6,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+          write (stderr,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
                ': DEBUG '//sbr_nm//'() diassembles argument into Option = ''', &
                arg_val(3:2+opt_lng),''', conjunction is ''', &
                arg_val(3+opt_lng:3+opt_lng),''', argument = ''', &
@@ -522,7 +525,7 @@ contains
        opt_cnj_is_spc=.true.  ! [flg] Option conjunction is space character
        arg_val_srt_idx=1      ! [idx] Starting position of argument value
     endif                     ! endif
-    if (opt_cnj_is_spc) then 
+    if (opt_cnj_is_spc) then
        ! Obtain value of option by getting next command-line argument
        ! New arguments will alter input values of arg_idx,arg_val
        call get_command_argument(arg_idx,arg_val)
@@ -535,13 +538,13 @@ contains
     ! Read argument into integer and return
     read (arg_val(arg_val_srt_idx:arg_lng),*) opt_val ! [flg] Variable to receive copy of arg_val
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,g12.6)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() assigned argument value = ',opt_val
     endif                     ! endif
     if(present(opt_flg)) opt_flg=.true. ! [flg] Variable set by command-line
     return
   end subroutine ftn_arg_get_lgc
-  
+
   subroutine ftn_arg_get_sng( & ! [sbr] Process string-valued command-line argument
        arg_idx, & ! I/O [idx] Argument counter
        arg_val, & ! I/O [sng] String to copy into opt_val
@@ -559,7 +562,7 @@ contains
     ! Commons
     ! Input
     ! Input/Output
-    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter 
+    integer,intent(inout)::arg_idx ! I/O [idx] Argument counter
     character(len=*),intent(inout)::arg_val ! I/O [sng] String to copy into opt_val
     ! Output
     character(len=*),intent(out)::opt_val ! O [sng] Variable to receive copy of arg_val
@@ -578,7 +581,7 @@ contains
     arg_lng=len_trim(arg_val) ! [nbr] Length of argument
     opt_lng=ftn_opt_lng_get(arg_val) ! [nbr] Length of option
     if (dbg_lvl >= dbg_io) then
-       write (6,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(2a,i2,3a,i2)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() reports arg_idx = ',arg_idx,  &
             ', Option = ''',arg_val(1:arg_lng),''', Length = ',arg_lng
     endif                     ! endif
@@ -588,7 +591,7 @@ contains
        opt_cnj_is_spc=.false. ! [flg] Option conjunction is space character
        arg_val_srt_idx=3+opt_lng+1 ! [idx] Starting position of argument value
        if (dbg_lvl >= dbg_io) then
-          write (6,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+          write (stderr,'(8a)') prg_nm(1:ftn_strlsc(prg_nm)), &
                ': DEBUG '//sbr_nm//'() diassembles argument into Option = ''', &
                arg_val(3:2+opt_lng),''', conjunction is ''', &
                arg_val(3+opt_lng:3+opt_lng),''', argument = ''', &
@@ -598,7 +601,7 @@ contains
        opt_cnj_is_spc=.true.  ! [flg] Option conjunction is space character
        arg_val_srt_idx=1      ! [idx] Starting position of argument value
     endif                     ! endif
-    if (opt_cnj_is_spc) then 
+    if (opt_cnj_is_spc) then
        ! Obtain value of option by getting next command-line argument
        ! New arguments will alter input values of arg_idx,arg_val
        call get_command_argument(arg_idx,arg_val)
@@ -608,7 +611,7 @@ contains
        arg_lng=len_trim(arg_val) ! [nbr] Length of argument
        if (arg_lng <= 0) stop 'ftn_???_arg_get() reports option lacks argument'
        if (arg_lng > len_var) then
-          write (6,'(2a,i5,a,i5)') prg_nm(1:ftn_strlsc(prg_nm)), &
+          write (stderr,'(2a,i5,a,i5)') prg_nm(1:ftn_strlsc(prg_nm)), &
                ': ERROR '//sbr_nm//'() reports argument length = ',arg_lng, &
                ' too long to fit into variable length ',len_var
           stop
@@ -622,14 +625,14 @@ contains
        opt_val(idx:idx)=char(0) ! [sng] Variable to receive copy of arg_val
     end do                    ! end loop over characters
     if (dbg_lvl >= dbg_io) then
-       write (6,'(4a)') prg_nm(1:ftn_strlsc(prg_nm)), &
+       write (stderr,'(4a)') prg_nm(1:ftn_strlsc(prg_nm)), &
             ': DEBUG '//sbr_nm//'() assigned argument value = ',opt_val(1:len_trim(opt_val)),'<--End of opt_val string'
        call ftn_strprn(opt_val)   ! [fnc] Print character values of string
     endif ! endif
     if(present(opt_flg)) opt_flg=.true. ! [flg] Variable set by command-line
     return
   end subroutine ftn_arg_get_sng
-  
+
   integer function ftn_strstr(sng1,sng2) ! [idx] Location of sng2 in sng1
     ! Purpose: Return the location of second string in the first
     ! Fortran intrinsic len(sng) is returned if string is not NUL-terminated
@@ -667,7 +670,7 @@ contains
     endif ! endif
     return
   end function ftn_strstr
-  
+
   subroutine ftn_strini(sng) ! [sng] sng(1:len)=NUL
     ! Purpose: Initialize all elements of a character array to char(0)
     ! Usage:
@@ -683,10 +686,10 @@ contains
     do idx=1,lng
        sng(idx:idx)=char(0)
     end do                    ! end loop over characters
-    ! write (6,*) 'ftn_strini(): Initialized string of length',lng
+    ! write (stderr,*) 'ftn_strini(): Initialized string of length',lng
     return
   end subroutine ftn_strini
-  
+
   subroutine ftn_strnul(sng) ! [sbr] NUL-initialize all characters after LSC
     ! Purpose: Change space characters to NUL characters in a string
     ! Spaces after last significant character (LSC) in string are changed to NUL
@@ -708,7 +711,7 @@ contains
     end do                    ! end loop over characters
     return
   end subroutine ftn_strnul
-  
+
   subroutine ftn_strspc(sng) ! [sbr] Space-initialize all characters after LSC
     ! Purpose: Change NUL characters in a string to space characters
     ! All characters after last significant character (LSC) in string are changed to Space
@@ -729,7 +732,7 @@ contains
     end do                    ! end loop over characters
     return
   end subroutine ftn_strspc
-  
+
   integer function ftn_strlsc(sng)
     ! Purpose: Return position of last significant character (LSC) in string
     ! LSC is last character that is not a space or a NUL character
@@ -759,7 +762,7 @@ contains
     ftn_strlsc=idx
     return
   end function ftn_strlsc
-  
+
   integer function ftn_strfic(sng) ! [idx] First NUL or 8-bit character position
     ! Purpose: Return position of first insignificant character (FIC) in string
     ! FIC is first NUL character in string, or first 8-bit character, i.e., iachar > 127
@@ -784,7 +787,7 @@ contains
     ftn_strfic=idx ! [idx] First NUL or 8-bit character position
     return
   end function ftn_strfic
-  
+
   subroutine ftn_strprn(sng) ! [fnc] Print character values of string
     ! Purpose: Print character values of string
     ! Usage:
@@ -805,25 +808,25 @@ contains
        iachr_crr=iachar(chr_crr) ! [enm] Integer representing current character
        if (idx < lng) then
           if (iachr_crr == 0) then
-             write (6,'(a3,a3,i3,a2)',advance="no") 'NUL',' = ',iachr_crr,', '
+             write (stderr,'(a3,a3,i3,a2)',advance="no") 'NUL',' = ',iachr_crr,', '
           else if (iachr_crr == 32) then
-             write (6,'(a5,a3,i3,a2)',advance="no") 'SPACE',' = ',iachr_crr,', '
+             write (stderr,'(a5,a3,i3,a2)',advance="no") 'SPACE',' = ',iachr_crr,', '
           else
-             write (6,'(a1,a3,i3,a2)',advance="no") chr_crr,' = ',iachr_crr,', '
+             write (stderr,'(a1,a3,i3,a2)',advance="no") chr_crr,' = ',iachr_crr,', '
           endif               ! endif
        else
           if (iachr_crr == 0) then
-             write (6,'(a3,a3,i3)') 'NUL',' = ',iachr_crr,', '
+             write (stderr,'(a3,a3,i3)') 'NUL',' = ',iachr_crr,', '
           else if (iachr_crr == 32) then
-             write (6,'(a5,a3,i3)') 'SPACE',' = ',iachr_crr,', '
+             write (stderr,'(a5,a3,i3)') 'SPACE',' = ',iachr_crr,', '
           else
-             write (6,'(a1,a3,i3)') chr_crr,' = ',iachr_crr,', '
+             write (stderr,'(a1,a3,i3)') chr_crr,' = ',iachr_crr,', '
           endif               ! endif
        endif                  ! endif
     end do                    ! end loop over characters
     return
   end subroutine ftn_strprn
-  
+
   subroutine ftn_strcpy(sng1,sng2)
     ! Purpose: Copy sng2 into sng1
     ! Space remaining at end of sng1 is NUL-initialized
@@ -860,15 +863,15 @@ contains
     lng1=ftn_strlen(sng1) ! [nbr] Length of string
     lng2=ftn_strlen(sng2) ! [nbr] Length of string
     if (len1 < lng2) then
-       write (6,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR len1 < lng2 in ftn_strcpy()'
-       write (6,'(a,i3,a,i3,2a)') 'len1 = ',len1,', lng1 = ',lng1,', sng1 = ',sng1
-       write (6,'(a,i3,a,i3,2a)') 'len2 = ',len2,', lng2 = ',lng2,', sng2 = ',sng2
+       write (stderr,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR len1 < lng2 in ftn_strcpy()'
+       write (stderr,'(a,i3,a,i3,2a)') 'len1 = ',len1,', lng1 = ',lng1,', sng1 = ',sng1
+       write (stderr,'(a,i3,a,i3,2a)') 'len2 = ',len2,', lng2 = ',lng2,', sng2 = ',sng2
        stop 'EXIT_FAILURE from ftn_strcpy()'
     endif                     ! endif
     sng1(1:lng2)=sng2(1:lng2)
     return
   end subroutine ftn_strcpy
-  
+
   integer function ftn_strcmp(sng1,sng2) ! [fnc] Compare sng1 to sng2: -1,0,1 iff sng1 <,=,> sng2
     ! Purpose: Compare sng2 to sng1
     ! Returns an integer less than, equal to, or greater than
@@ -895,12 +898,12 @@ contains
     len2=len(sng2)
     lng1=ftn_strlen(sng1) ! [nbr] Length of string
     lng2=ftn_strlen(sng2) ! [nbr] Length of string
-    if (.false.) then 
+    if (.false.) then
        ! If this debugging block is turned on then attempting to print,ftn_strcmp()
        ! will cause a recursive I/O error at runtime
-       write (6,'(2a)') prg_nm(1:ftn_strlen(prg_nm)),': DEBUG Diagnostics from ftn_strcmp()'
-       write (6,'(2(a,i3),2a)') 'len1 = ',len1,', lng1 = ',lng1,', sng1 = ',sng1
-       write (6,'(2(a,i3),2a)') 'len2 = ',len2,', lng2 = ',lng2,', sng2 = ',sng2
+       write (stderr,'(2a)') prg_nm(1:ftn_strlen(prg_nm)),': DEBUG Diagnostics from ftn_strcmp()'
+       write (stderr,'(2(a,i3),2a)') 'len1 = ',len1,', lng1 = ',lng1,', sng1 = ',sng1
+       write (stderr,'(2(a,i3),2a)') 'len2 = ',len2,', lng2 = ',lng2,', sng2 = ',sng2
        call ftn_strprn(sng1) ! [fnc] Print character values of string
        call ftn_strprn(sng2) ! [fnc] Print character values of string
     endif                     ! endif
@@ -915,11 +918,11 @@ contains
        else                ! (iachar(sng1(idx:idx)) > iachar(sng2(idx:idx)))
           ftn_strcmp=1     ! [fnc] Compare sng1 to sng2: -1,0,1 iff sng1 <,=,> sng2
        endif               ! endif
-       
+
        ! Characters were unequal, exit with appropriate value
        goto 100            ! Exit Branch
     end do
-    
+
     if (lng1 == lng2) then
        ! All significant values of both strings were equal in all positions
        ! Thus the strings are equal by our criterion
@@ -930,15 +933,15 @@ contains
        ! Thus return value depends on which string is longer
        if (lng1 > lng2) then
           ftn_strcmp=1        ! [fnc] Compare sng1 to sng2: -1,0,1 iff sng1 <,=,> sng2
-       else 
+       else
           ftn_strcmp=-1       ! [fnc] Compare sng1 to sng2: -1,0,1 iff sng1 <,=,> sng2
        endif                  ! endif
     endif ! endif lng1 == lng2
-    
+
 100 continue                  ! Exit branch for unequal values inside loop
     return
   end function ftn_strcmp
-  
+
   subroutine ftn_strcpylsc(sng1,sng2)
     ! Purpose: Copy sng2 into sng1
     ! Space remaining at end of sng1 is NUL-initialized
@@ -964,9 +967,9 @@ contains
     lsc1=ftn_strlsc(sng1)
     lsc2=ftn_strlsc(sng2)
     if (len1 < lsc2) then
-       write (6,'(a,a)') prg_nm(1:ftn_strlsc(prg_nm)),': ERROR len1 < lsc2 in ftn_strcpylsc()'
-       write (6,'(a,i3,a,i3,2a)') 'len1 = ',len1,', lsc1 = ',lsc1,', sng1 = ',sng1
-       write (6,'(a,i3,a,i3,2a)') 'len2 = ',len2,', lsc2 = ',lsc2,', sng2 = ',sng2
+       write (stderr,'(a,a)') prg_nm(1:ftn_strlsc(prg_nm)),': ERROR len1 < lsc2 in ftn_strcpylsc()'
+       write (stderr,'(a,i3,a,i3,2a)') 'len1 = ',len1,', lsc1 = ',lsc1,', sng1 = ',sng1
+       write (stderr,'(a,i3,a,i3,2a)') 'len2 = ',len2,', lsc2 = ',lsc2,', sng2 = ',sng2
        stop 'EXIT_FAILURE from ftn_strcpylsc()'
     endif                     ! endif
     sng1(1:lsc2)=sng2(1:lsc2)
@@ -976,7 +979,7 @@ contains
     end do                    ! end loop over characters
     return
   end subroutine ftn_strcpylsc
-  
+
   subroutine ftn_strcat( &   ! [fnc] sng1 := sng1 // sng2
        sng1, &                ! I/O [sng] String to affix second string to
        sng2)                ! I [sng] String to affix to first string
@@ -1002,18 +1005,18 @@ contains
     lng1=ftn_strlen(sng1) ! [nbr] Length of string
     lng2=ftn_strlen(sng2) ! [nbr] Length of string
     if (lng1+lng2 >= len1) then
-       write (6,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR lng1+lng2 >= len1 in ftn_strcat()'
-       write (6,'(a,i3,a,i3,2a)') 'len1 = ',len1,', lng1 = ',lng1,', sng1 = ',sng1
-       write (6,'(a,i3,a,i3,2a)') 'len2 = ',len2,', lng2 = ',lng2,', sng2 = ',sng2
+       write (stderr,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR lng1+lng2 >= len1 in ftn_strcat()'
+       write (stderr,'(a,i3,a,i3,2a)') 'len1 = ',len1,', lng1 = ',lng1,', sng1 = ',sng1
+       write (stderr,'(a,i3,a,i3,2a)') 'len2 = ',len2,', lng2 = ',lng2,', sng2 = ',sng2
        stop 'EXIT_FAILURE from ftn_strcat()'
     endif                     ! endif
     sng1(lng1+1:lng1+lng2)=sng2(1:lng2) ! I/O [sng] String to affix second string to
     return
   end subroutine ftn_strcat
-  
+
   subroutine ftn_strpfx(sng1,sng2) ! [sbr] sng2 := sng1 // sng2
     ! Purpose: sng2 := sng1 // sng2
-    ! Differences with ftn_strcat(): 
+    ! Differences with ftn_strcat():
     ! 1. Result is stored in second string not first string
     ! 2. Strings are trimmed before concatenation
     ! The case where sng1=sng2 is handled correctly
@@ -1045,9 +1048,9 @@ contains
     len_trim1=len_trim(sng1)
     len_trim2=len_trim(sng2)
     if (lsc1+lsc2 >= len2) then
-       write (6,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR lsc1+lsc2 >= len2 in ftn_strpfx()'
-       write (6,'(4(a,i3),2a)') 'len1 = ',len1,', len_trim1 = ',len_trim1,', lng1 = ',lng1,', sng1 = ',sng1
-       write (6,'(4(a,i3),2a)') 'len2 = ',len2,', len_trim2 = ',len_trim2,', lng2 = ',lng2,', sng2 = ',sng2
+       write (stderr,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR lsc1+lsc2 >= len2 in ftn_strpfx()'
+       write (stderr,'(4(a,i3),2a)') 'len1 = ',len1,', len_trim1 = ',len_trim1,', lng1 = ',lng1,', sng1 = ',sng1
+       write (stderr,'(4(a,i3),2a)') 'len2 = ',len2,', len_trim2 = ',len_trim2,', lng2 = ',lng2,', sng2 = ',sng2
        call ftn_strprn(sng1)
        call ftn_strprn(sng2)
        stop 'EXIT_FAILURE from ftn_strpfx()'
@@ -1057,12 +1060,12 @@ contains
     sng2(1:lsc1)=sng1(1:lsc1)
     return
   end subroutine ftn_strpfx
-  
-  subroutine ftn_drcpfx( & ! [sbr] fl_nm := drc/fl_nm 
+
+  subroutine ftn_drcpfx( & ! [sbr] fl_nm := drc/fl_nm
        drc, & ! I [sng] Directory to prepend
        fl_nm) ! I/O [sng] File name
     ! Purpose: fl_nm := drc/fl_nm, more or less
-    ! Differences with ftn_strpfx(): 
+    ! Differences with ftn_strpfx():
     ! 1. Result is stored in second string not first string
     ! 2. Strings are trimmed before concatenation
     ! 3. Filenames containing slashes are unaltered
@@ -1086,16 +1089,16 @@ contains
     lng_drc=ftn_strlen(drc) ! [nbr] Length of string
     lng_fl=ftn_strlen(fl_nm) ! [nbr] Length of string
     if (lng_drc+lng_fl >= len_fl) then
-       write (6,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR lng_drc+lng_fl >= len_fl in ftn_drcpfx()'
-       write (6,'(2(a,i3),2a)') 'len_drc = ',len_drc,', lng_drc = ',lng_drc,', drc = ',drc
-       write (6,'(2(a,i3),2a)') 'len_fl = ',len_fl,', lng_fl = ',lng_fl,', fl_nm = ',fl_nm
+       write (stderr,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR lng_drc+lng_fl >= len_fl in ftn_drcpfx()'
+       write (stderr,'(2(a,i3),2a)') 'len_drc = ',len_drc,', lng_drc = ',lng_drc,', drc = ',drc
+       write (stderr,'(2(a,i3),2a)') 'len_fl = ',len_fl,', lng_fl = ',lng_fl,', fl_nm = ',fl_nm
        call ftn_strprn(drc)
        call ftn_strprn(fl_nm)
        stop 'EXIT_FAILURE from ftn_drcpfx()'
     endif                     ! endif
-    
+
     if ( &                     ! Conditions for prepending fl_nm with drc:
-         lng_drc > 0 .and. &   ! Directory must be non-NUL 
+         lng_drc > 0 .and. &   ! Directory must be non-NUL
          ftn_strstr(fl_nm,'/') == -1 & ! fl_nm does not look like directory itself
          ) then
        ! If directory does not have trailing slash...
@@ -1114,10 +1117,10 @@ contains
        endif                  ! Directory does have trailing slash
     endif                     ! endif prepending drc
     call ftn_strnul(fl_nm) ! [sbr] NUL-initialize all characters after LSC
-    
+
     return
   end subroutine ftn_drcpfx
-  
+
   subroutine ftn_prg_ID_mk(CVS_Id,CVS_Revision,CVS_Date,prg_ID)
     ! Purpose: Create identity string from CVS input
     use dbg_mdl ! [mdl] Debugging constants, prg_nm, dbg_lvl
@@ -1148,30 +1151,30 @@ contains
     else
        ! String 'Date' was found---CVS expansion is -kk or -kkv
        slash_ptr=ftn_strstr(CVS_Date,'/')
-       if (slash_ptr > 0) then 
-          CVS_typ=CVS_kkv 
-       else 
+       if (slash_ptr > 0) then
+          CVS_typ=CVS_kkv
+       else
           CVS_typ=CVS_kk
        endif                  ! endif
     endif                     ! endif
-    
+
     if (.false.) then
-       write (6,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': DEBUG ftn_prg_ID_mk() reports CVS strings:'
-       write (6,'(a,a)') 'CVS_Id: ',CVS_Id
-       write (6,'(a,a)') 'CVS_Revision: ',CVS_Revision
-       write (6,'(a,a)') 'CVS_Date: ',CVS_Date
-       write (6,'(a,i1)') 'CVS_typ: ',CVS_typ
-       write (6,'(a,i2)') 'Date_ptr: ',Date_ptr
-       write (6,'(a,i2)') 'slash_ptr: ',slash_ptr
+       write (stderr,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': DEBUG ftn_prg_ID_mk() reports CVS strings:'
+       write (stderr,'(a,a)') 'CVS_Id: ',CVS_Id
+       write (stderr,'(a,a)') 'CVS_Revision: ',CVS_Revision
+       write (stderr,'(a,a)') 'CVS_Date: ',CVS_Date
+       write (stderr,'(a,i1)') 'CVS_typ: ',CVS_typ
+       write (stderr,'(a,i2)') 'Date_ptr: ',Date_ptr
+       write (stderr,'(a,i2)') 'slash_ptr: ',slash_ptr
     endif
-    
+
     ! CVS_Revision and CVS_Date are parameters---do not attempt to write them
     !  call ftn_strnul(CVS_Revision) ! [sbr] NUL-initialize all characters after LSC
     !  call ftn_strnul(CVS_Date) ! [sbr] NUL-initialize all characters after LSC
     call ftn_strini(prg_ID) ! [sng] sng(1:len)=NUL
     if (CVS_typ == CVS_kk) then
        prg_ID='Source file unknown Version unknown Date unknown' // char(0)
-    else 
+    else
        prg_ptr=ftn_strstr(CVS_Id,',v') ! ',v' is right after program name
        if (prg_ptr < 0) stop 'ERROR: ftn_prg_ID_mk() unable to find source code name'
        if (CVS_typ == CVS_kv) then
@@ -1184,13 +1187,13 @@ contains
           prg_ID=CVS_Id(6:prg_ptr-1) //  &
                ' version ' // CVS_Revision(vrs_ptr+5:ftn_strlen(CVS_Revision)-2) //  &
                ' dated ' // CVS_Date(8:26) // ' GMT' // char(0)
-       else 
-          write (6,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR ftn_prg_ID_mk() reports unknown CVS_typ'
+       else
+          write (stderr,'(a,a)') prg_nm(1:ftn_strlen(prg_nm)),': ERROR ftn_prg_ID_mk() reports unknown CVS_typ'
        endif                  ! endif
     endif                     ! endif
     return
   end subroutine ftn_prg_ID_mk
-  
+
   subroutine ftn_cmd_ln_sng(cmd_ln) ! [sng] Re-construct command-line into single string
     ! Purpose: Return a copy of command-line and initialize program name
     ! See http://www.winteracter.com/f2kcli/index.htm for alternatives
@@ -1213,12 +1216,12 @@ contains
     call ftn_strini(prg_nm) ! [sng] sng(1:len)=NUL
     cmd_ln_len=len(cmd_ln)  ! [nbr] Length of command-line
     cmd_ln_lng=0            ! [nbr] Length of command-line CEWI
-    
+
     arg_nbr=command_argument_count() ! [nbr] Number of command-line arguments
     if (dbg_lvl >= dbg_vec) then
-       write (6,'(a,i2)') 'ftn_cmd_ln_sng(): arg_nbr = ',arg_nbr
+       write (stderr,'(a,i2)') 'ftn_cmd_ln_sng(): arg_nbr = ',arg_nbr
     endif                     ! endif dbg
-    
+
     ! Loop over arguments
     do arg_idx=0,arg_nbr      ! NB: Loop starts with 0
        ! Argument 0 is program name
@@ -1233,19 +1236,19 @@ contains
        cmd_ln_lng=ftn_strlen(cmd_ln) ! [nbr] Length of string
        if (cmd_ln_lng > cmd_ln_len) stop 'cmd_ln_lng > cmd_ln_len in ftn_cmd_ln_sng()'
        if (dbg_lvl >= dbg_vrb) then
-          write (6,'(a,i3)') 'arg_idx = ',arg_idx
-          write (6,'(a,a)') 'arg_val = ',arg_val
-          write (6,'(a,i3)') 'len(arg_val) = ',len(arg_val)
-          write (6,'(a,i3)') 'ftn_strlen(arg_val) = ',ftn_strlen(arg_val)
-          write (6,'(a,i3)') 'ftn_strlen(cmd_ln) = ',ftn_strlen(cmd_ln)
-          write (6,'(a,a)') 'cmd_ln = ',cmd_ln
+          write (stderr,'(a,i3)') 'arg_idx = ',arg_idx
+          write (stderr,'(a,a)') 'arg_val = ',arg_val
+          write (stderr,'(a,i3)') 'len(arg_val) = ',len(arg_val)
+          write (stderr,'(a,i3)') 'ftn_strlen(arg_val) = ',ftn_strlen(arg_val)
+          write (stderr,'(a,i3)') 'ftn_strlen(cmd_ln) = ',ftn_strlen(cmd_ln)
+          write (stderr,'(a,a)') 'cmd_ln = ',cmd_ln
        endif                  ! endif dbg
     end do                     ! end loop over arg
-    
-    if (dbg_lvl >= dbg_io) write (6,'(a,a)') 'cmd_ln = ',cmd_ln(1:ftn_strlen(cmd_ln))
+
+    if (dbg_lvl >= dbg_io) write (stderr,'(a,a)') 'cmd_ln = ',cmd_ln(1:ftn_strlen(cmd_ln))
     return
   end subroutine ftn_cmd_ln_sng
-  
+
   character(len=10) function ftn_date2sng(idate)
     ! Purpose: Convert integer date in YYYYMMDD to a character array in the form
     ! 'YYYY-MM-DD'
@@ -1257,7 +1260,7 @@ contains
     ! Input
     integer,intent(in)::idate
     ! Local
-    integer yy 
+    integer yy
     integer mm
     integer dd
     character dash
@@ -1270,7 +1273,7 @@ contains
     write(ftn_date2sng,'(i4.4,a1,i2.2,a1,i2.2)') yy,dash,mm,dash,dd
     return
   end function ftn_date2sng
-  
+
   character(len=8) function ftn_sec2sng(isec)
     ! Purpose: Convert integer seconds to a character array in the form 'HH:MM:SS'
     ! Author: Brian Eaton charutl.F:isec2char()
@@ -1293,5 +1296,5 @@ contains
     write(ftn_sec2sng,'(i2.2,a1,i2.2,a1,i2.2)') hh,colon,mm,colon,ss
     return
   end function ftn_sec2sng
-  
+
 end module sng_mdl ! [mdl] String manipulation
