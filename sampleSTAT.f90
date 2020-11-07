@@ -144,7 +144,7 @@ PROGRAM sample_stat
    INTEGER                                  :: Level = -1                ! confidence level ...
                                                                          ! ... for "OutlierOut" routine
    CHARACTER(LEN=6)                         :: LevelMsg                  ! confidence level string
-   INTEGER                                  :: MaxNum                    ! Max. numbers of lines for table of report
+!   INTEGER                                  :: MaxNum                    ! Max. numbers of lines for table of report
    REAL(KIND=DP)                            :: StrayAreaResult           ! Stray Area of single values depending on conf. level
   ! Command-line variables
    character(16)                            ::arg_val            ! [sng] Command line argument value
