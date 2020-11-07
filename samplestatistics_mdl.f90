@@ -4,24 +4,21 @@ MODULE SampleStatistics
 !
 ! Purpose:
 !    Offers routines for sample (series) statistics, like mean, variance,
-!    standard deviation and student factor as well as stray area of the 
+!    standard deviation and student factor as well as stray area of the
 !    values and trust area of the arith. mean.
 !
 !    Calculations use double precision (on IEEE 754) reals.
-! 
+!
 ! History:
 !    Version   Programmer         Date       Description
 !    -------   ----------         ---------- -----------
 !    1.0       Ibrahim, Hani      2006/04/01 Orginal code
-!    1.0.1     Ibrahim, Hani      2006/05/23 - Pointer bug removed from OutlierOut[Nalimov]
-!                                            - Add Error code "OError" to OutlierOut[Nalimov]
-!    1.0.2     Ibrahim, Hani      2006/06/15 Add OPTIONAL attributes to some args of OutlierOut [Nalimov]
 !
 ! User routines:
 !     ArithMean = Aritmetic mean
 !     MinVar    = Min. value
 !     MaxVar    = Max. value
-!     Sums      = Sums of x(i) and x^2(i)                                                                        
+!     Sums      = Sums of x(i) and x^2(i)
 !     Variance  = Statistical variance
 !     StdDev    = Standard deviation
 !     StrayArea = Range of dispersion
@@ -35,7 +32,7 @@ MODULE SampleStatistics
 ! ------------------ Implicit ------------------------------------------
    IMPLICIT NONE
 ! ------------------ Local declarations --------------------------------
-   PUBLIC  :: ArithMean, MaxVar, MinVar, Variance, StdDev, StrayArea, & 
+   PUBLIC  :: ArithMean, MaxVar, MinVar, Variance, StdDev, StrayArea, &
               TrustArea, Sums
    PRIVATE :: StudentFactor
 ! ------------------ Constant declarations -----------------------------
@@ -48,7 +45,7 @@ MODULE SampleStatistics
    ! Column 4 : Student factor, 99.9% security
    !
    ! 999 := infinite
-   
+
    REAL(KIND=DP), DIMENSION(35,4), Parameter, PRIVATE :: TTable = RESHAPE((/ &
      1.0_DP, 12.71_DP,  63.66_DP, 636.62_DP, &
      2.0_DP,  4.30_DP,   9.92_DP,  31.60_DP, &
@@ -96,13 +93,13 @@ CONTAINS
    SUBROUTINE Sums(X, N, SumX, SumSqX)
    ! Calculate sums of x(i) and x^2(i)
       IMPLICIT NONE
-      
+
       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! IN: array of value (vector)
       INTEGER, INTENT(IN)                     :: N             ! IN: numbers of values
       REAL(KIND=DP), INTENT(OUT)              :: SumX, SumSqX  ! OUT: SumX = sum of x(i)
                                                                ! OUT: SumSqX = sum of x^2(i)
       SumX = 0.0_DP; SumSqX = 0.0_DP
-      
+
       SumX   = SUM( X(1:N) )
       SumSqX = SUM( X(1:N) * X(1:N) )
 
@@ -113,59 +110,59 @@ CONTAINS
    FUNCTION ArithMean(X, N)
    ! Calculate the arithmetic mean.
       IMPLICIT NONE
-      
+
       REAL(KIND=DP)                           :: ArithMean     ! OUT: arithmetical mean
       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! IN: array of value (vector)
       INTEGER, INTENT(IN)                     :: N             ! IN: numbers of values
-      
+
       REAL(KIND=DP)                           :: SumX, SumSqX  ! SumX = sum of x(i)
                                                                ! SumSqX = sum of x^2(i)
       CALL Sums(X, N, SumX, SumSqX)
       ArithMean = SumX / REAL(N,KIND=DP)
-      
+
    END FUNCTION ArithMean
-   
-   
-   
+
+
+
    FUNCTION GeoMean(X, N)
     ! Calculate the geometric mean
        IMPLICIT NONE
-      
+
        REAL(KIND=DP)                           :: GeoMean       ! geometric mean
        REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! array of value (vector)
        INTEGER, INTENT(IN)                     :: N             ! numbers of values
-      
+
        INTEGER                                 :: I             ! loop variable
        REAL(KIND=DP)                           :: Produkt       ! product of x(i)
 
        Produkt = 1.0_DP
-      
+
        DO I=1, N
           Produkt = Produkt * X(I)
        END DO
-      
+
        GeoMean = Produkt**(1.0_DP/REAL(N, KIND=DP))
     END FUNCTION GeoMean
-   
-   
-   
+
+
+
     FUNCTION HarMean(X, N)
     ! Calculate the harmonic mean
        IMPLICIT NONE
-      
+
        REAL(KIND=DP)                           :: HarMean       ! harmonic mean
        REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! array of value (vector)
        INTEGER, INTENT(IN)                     :: N             ! numbers of values
-      
+
        INTEGER                                 :: I             ! loop variable
        REAL(KIND=DP)                           :: InvSum        ! inverse sum of x(i)
 
        InvSum = 0.0_DP
-      
+
        DO I=1, N
           InvSum = InvSum + 1._DP/X(I)
        END DO
-      
+
        HarMean = REAL(N, KIND=DP)/InvSum
     END FUNCTION HarMean
 
@@ -174,14 +171,14 @@ CONTAINS
    Function Variance(X, N)
    ! Calculate the statistical variance
       IMPLICIT NONE
-      
+
       REAL(KIND=DP)                           :: Variance      ! OUT: statistical variance
       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! IN: array of value (vector)
       INTEGER, INTENT(IN)                     :: N             ! IN: numbers of values
-      
+
       REAL(KIND=DP)                           :: SumX, SumSqX  ! SumX = sum of x(i)
                                                                ! SumSqX = sum of x^2(i)
-      
+
       CALL Sums(X, N, SumX, SumSqX)
       Variance = (SumSqX - SumX*SumX/REAL(N,KIND=DP))/REAL((N-1),KIND=DP)
    END FUNCTION Variance
@@ -191,87 +188,87 @@ CONTAINS
    FUNCTION StdDev(X, N)
    ! Calculate the standard deviation
       IMPLICIT NONE
-      
+
       REAL(KIND=DP)                           :: StdDev        ! OUT: standard deviation
       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! IN: array of values (vector)
       INTEGER, INTENT(IN)                     :: N             ! IN: numbers of values
- 
+
       StdDev = SQRT(Variance(X, N))
    END FUNCTION StdDev
 
 
    FUNCTION MinVar(X, N)
    ! Returns the minimum value of array X
-    
+
     IMPLICIT NONE
-    
+
     REAL(KIND=DP)                             :: MinVar        ! OUT: Minimum value
     INTEGER, INTENT(IN)                       :: N             ! IN: numbers of values
     REAL(KIND=DP), DIMENSION(:), INTENT(IN)   :: X             ! IN: array of values (vector)
-    
+
     INTEGER                                   :: I             ! Loop index
     INTEGER                   :: MinIdx = 1    ! Index of the min. value
-    
+
     DO I=2, N
         IF (X(I) < X(MinIdx)) THEN
             MinIdx = I
         END IF
     END DO
-    
+
     MinVar = X(MinIdx)
-   
+
    END FUNCTION MinVar
-   
-   
-   
+
+
+
    FUNCTION MaxVar(X, N)
    ! Returns the maximum value of array X
-    
+
     IMPLICIT NONE
-    
+
     REAL(KIND=DP)                             :: MaxVar        ! OUT: Maximum value
     INTEGER, INTENT(IN)                       :: N             ! IN: numbers of values
     REAL(KIND=DP), DIMENSION(:), INTENT(IN)   :: X             ! IN: array of values (vector)
-    
+
     INTEGER                                   :: I             ! Loop index
     INTEGER                                   :: MaxIdx = 1    ! Index of the max. value
-    
+
     MaxIdx = 1
-    
+
     DO I=2, N
         IF (X(I) > X(MaxIdx)) THEN
             MaxIdx = I
         END IF
     END DO
-    
+
     MaxVar = X(MaxIdx)
-   
+
    END FUNCTION MaxVar
-   
-   
-   
+
+
+
    FUNCTION StudentFactor(N, P)
-   ! Pick the correct Student-factor out of the t-table, depentent of 
+   ! Pick the correct Student-factor out of the t-table, depentent of
    ! the number of values (N) and the statistical security (P)
-   
+
    ! Errors:
    ! StudentFactor = -1.0 -> Wrong statistical security, choose "lo" for 95%, "md" for 99%, "hi" for 99.9%
    ! StudentFactor = -2.0 -> Incorrect degree of freedom, has to be > 0 at least
-   
+
       IMPLICIT NONE
-      
+
       REAL(KIND=DP)               :: StudentFactor             ! OUT: student factor
       INTEGER, INTENT(IN)         :: N                         ! IN: numbers of values
-      CHARACTER(LEN=2),INTENT(IN) :: P                         ! IN: statistical security 
+      CHARACTER(LEN=2),INTENT(IN) :: P                         ! IN: statistical security
                                                                !     (lo=95%, md=99%, hi=99.5%)
-                            
+
       INTEGER                     :: F, I, J, K                ! F = stat. degree of freedom,
                                                                ! I = row of t-table
                                                                ! J = column of t-table
                                                          ! K = interpolation step
-      
+
       F     = N - 1 ! Calculate degree of freedom
-      
+
       ! Set the proper column of the t-table, depeWrong statistical security, choose "lo" for 95%, "md" for 99%, "hi" for 99.9%ndent of the stat. security
       SELECT CASE(P)
       CASE('lo')
@@ -285,7 +282,7 @@ CONTAINS
        StudentFactor = -1.0_DP
             RETURN
       END SELECT
-      
+
       ! Pick the correct Student-factor out of the t-table and interpolate if necessary
       SELECT CASE(F)
       CASE(1:20)
@@ -301,7 +298,7 @@ CONTAINS
      CASE(101:800)
        K = INT(F/100)*100
        I = 26 + INT(F/100)
-       StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/100.0_DP*(F-K))       
+       StudentFactor = TTable(I,J)-((TTable(I,J)-TTable(I+1,J))/100.0_DP*(F-K))
      CASE(801:) ! infinite
        StudentFactor = TTable(35,J)
      CASE DEFAULT
@@ -309,46 +306,46 @@ CONTAINS
             StudentFactor = -2.0_DP
             RETURN
       END SELECT
-      
+
    END FUNCTION StudentFactor
-   
-   
-   
+
+
+
    FUNCTION StrayArea(X, N, P)
    ! Calculates the range of dispersion (stray area) of the values
    ! StrayArea = StdDev * StudentFactor
-   
+
    ! Error:
    ! StrayArea < 0 -> StudentFactor is not valid
-   
+
       IMPLICIT NONE
-      
+
       REAL(KIND=DP)                           :: StrayArea     ! OUT: range of dispersion
       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! IN: array of value (vector)
       INTEGER, INTENT(IN)                     :: N             ! IN: number of values
       CHARACTER(LEN=2), INTENT(IN)            :: P             ! IN: statistical security
                                                                !     (lo=95%, md=99%, hi=99.5%)
-                                                               
+
       ! Check whether StudentFactor is valid
       IF (StudentFactor(N,P) < 0._DP) THEN
          StrayArea = -1._DP
          RETURN
       END IF
-      
+
       StrayArea = StdDev(X, N) * StudentFactor(N, P)
-      
+
    END FUNCTION StrayArea
-   
-   
+
+
    FUNCTION TrustArea(X, N, P)
    ! Calculates the stray area of the arithmetical mean.
    ! TrustArea = StrayArea/SQRT(number of values)
-   
+
    ! Error:
    ! TrustArea < 0 -> StudentFactor is not valid
-   
+
       IMPLICIT NONE
-      
+
       REAL(KIND=DP)              :: TrustArea                  ! OUT: stray area of the arithmetic mean
       REAL(KIND=DP), DIMENSION(:), INTENT(IN) :: X             ! IN: array of value (vector)
       INTEGER, INTENT(IN)                     :: N             ! IN: number of values
@@ -358,15 +355,15 @@ CONTAINS
       REAL(KIND=DP)              :: StrayArea_internal         ! Internal value of StrayArea to avoid multiple invocation
 
       StrayArea_internal = StrayArea(X, N, P)
-      
+
       ! Check whether StrayArea is valid
       IF (StrayArea_internal < 0._DP) THEN
          TrustArea = -1._DP
          RETURN
       END IF
-      
-      TrustArea = StrayArea_internal/SQRT(REAL(N,KIND=DP))   
-   
+
+      TrustArea = StrayArea_internal/SQRT(REAL(N,KIND=DP))
+
    END FUNCTION TrustArea
-   
+
 END MODULE SampleStatistics

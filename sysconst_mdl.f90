@@ -4,8 +4,8 @@ MODULE SysConst
 !
 ! Purpose:
 !    Provide literal constants for single and double precision reals and
-!    integers (on IEEE 754) as well as the unit number for error message
-!    output to STDERR (here = 0).
+!    integers (on IEEE 754) as well as a portable declaration of unit
+!    numbers for sdtin, stdout and stderr.
 !
 !
 ! History:
@@ -19,7 +19,7 @@ MODULE SysConst
 !
 !
 ! Special requirements:
-!
+! iso_fortran_env (optional)
 !
 ! ------------------ Use Module / Include files ------------------------
 ! Portable declaration of stderr, stdin, stdout

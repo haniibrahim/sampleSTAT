@@ -3,7 +3,8 @@ module ReadData
 ! ================== Prologue ==========================================
 !
 ! Purpose:
-!    Read 1D-data from stdin via linked list and store it in a 1D pointer array.
+!    Read 1D-numerical-data from stdin (pipe/redirection) and store it in a
+!    1D pointer array.
 !
 !
 ! History:
@@ -12,7 +13,8 @@ module ReadData
 !    1.0       Ibrahim, Hani      2020-11-07 Linked list for reading data
 !
 ! Processing:
-!
+!   Read 1-dimensional numerical data from stdin (pipe/redirection) in an
+!   1D-pointer-array via linked list method.
 !
 !
 ! Special requirements:

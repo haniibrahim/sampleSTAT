@@ -20,9 +20,10 @@
 !    1.2       Ibrahim, Hani      2020-11-07 Switched to linked list for reading data
 !
 ! Processing:
-!    Data has to be in a column and is read from Stdin.
-!
-!
+!   Read 1-dimensional numerical data from stdin (pipe/redirection) and calculate
+!   elementary tests for the evaluation of univariate measurement data that are
+!   typically recorded by scientists and engineers. These data have to be normally
+!   distributed for sampleSTAT's routines:
 !
 
 MODULE PrgMod
@@ -31,62 +32,8 @@ MODULE PrgMod
 
     IMPLICIT NONE
 
-!    INTEGER, PARAMETER :: StdErr = 0 ! Standard Error Unit (here 0)
-
 CONTAINS
-!----------------------------------------------------------------------
-!   SUBROUTINE ReadInVec(Dat_ptr, N, Error)
-!   ! Read in data from pipe, keyboard or command-line redirection and store the data
-!   ! in a real pointer vector.
-!      IMPLICIT NONE
-!      REAL(KIND=DP), DIMENSION(:), POINTER :: Dat_ptr    ! OUT: Data values
-!      INTEGER, INTENT(OUT)                 :: N          ! OUT: Number of values
-!      INTEGER, INTENT(OUT)                 :: Error      ! OUT: Error flag
-!                                                         !      0 -> no error
-!                                                         !      1 -> open file error
-!                                                         !      2 -> read data error
-!                                                         !      3 -> alloc error
-!
-!      INTEGER                         :: AllocStat       ! Allocate status
-!      INTEGER                         :: IOStatus        ! I/O status
-!      REAL(KIND=DP)                   :: Temp            ! Temp. storage of data
-!      INTEGER                         :: I               ! Loop index
-!      INTEGER                         :: Scratch_ID = 15 ! Unit ID for scratchfile
-!
-!      Error = 0                                          ! Set error flag -> no error
-!      N = 0                                              ! Set Counter = 0
-!      NULLIFY(Dat_ptr)
-!
-!      OPEN(Scratch_ID, STATUS='SCRATCH', IOSTAT=IOStatus)
-!
-!      file_io: IF (IOStatus == 0) THEN      ! successfully opened
-!         handle_data: DO
-!            READ(*,*, IOSTAT=IOStatus) Temp ! read from stdin/pipe ...
-!            IF (IOStatus < 0) EXIT          ! EOF reached
-!            count_n: IF (IOStatus > 0) THEN ! read error
-!               Error = 2
-!            ELSE count_n
-!               N = N + 1                    ! ... count the numbers of values ...
-!               WRITE(Scratch_ID,*) Temp     ! ... and write values to scratch file
-!            END IF count_n
-!         END DO handle_data
-!      ELSE file_io
-!         Error   = 1                        ! open error
-!      END IF file_io
-!
-!      err_chk: IF (Error == 0) THEN
-!         ALLOCATE(Dat_ptr(N), STAT=AllocStat)! alloc output pointer
-!         alloc: IF (AllocStat /= 0) THEN     ! alloc error
-!            Error = 3
-!         ELSE alloc
-!            REWIND(Scratch_ID)               ! Rewind scratch file
-!            readin: Do I=1, N                ! Read values from scratch file and store them in Dat_ptr
-!               READ(Scratch_ID,*) Dat_ptr(I)
-!         END DO readin
-!         END IF alloc
-!      END IF err_chk
-!
-!   END SUBROUTINE ReadInVec
+
 !----------------------------------------------------------------------
    SUBROUTINE Foo()
       IMPLICIT NONE
@@ -128,7 +75,9 @@ CONTAINS
    END SUBROUTINE Help
 
 END MODULE PrgMod
+
 !======================================================================
+
 PROGRAM sampleSTAT
 
    USE SysConst
@@ -303,9 +252,5 @@ PROGRAM sampleSTAT
    ELSE
       STOP OptError
    END IF
-
-!! --- Deallocate all dynamic arrays and pointers
-!   IF (ASSOCIATED(Values_ptr)) DEALLOCATE(Values_ptr, STAT=AllocErr)
-!   IF (AllocErr /= 0) STOP DeallocError
 
 END PROGRAM sampleSTAT
