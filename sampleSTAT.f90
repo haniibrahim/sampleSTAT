@@ -14,9 +14,10 @@
 ! History:
 !    Version   Programmer         Date       Description
 !    -------   ----------         ---------- -----------
-!    1.0       Ibrahim, Hani      05/29/2006 Original code
-!    1.1       Ibrahim, Hani      01/19/2016 Changed -s/--sens to -l/--level
-!                                            and some little cosmetic correct.
+!    1.0       Ibrahim, Hani      2006-05-29 Original code
+!    1.1       Ibrahim, Hani      2016-01-19 Changed -s/--sens to -l/--level
+!                                            and some little cosmetic corrections
+!    1.2       Ibrahim, Hani      2020-11-07 Switched to linked list for reading data
 !
 ! Processing:
 !    Data has to be in a column and is read from Stdin.
@@ -34,58 +35,58 @@ MODULE PrgMod
 
 CONTAINS
 !----------------------------------------------------------------------
-   SUBROUTINE ReadInVec(Dat_ptr, N, Error)
-   ! Read in data from pipe, keyboard or command-line redirection and store the data
-   ! in a real pointer vector.
-      IMPLICIT NONE
-      REAL(KIND=DP), DIMENSION(:), POINTER :: Dat_ptr    ! OUT: Data values
-      INTEGER, INTENT(OUT)                 :: N          ! OUT: Number of values
-      INTEGER, INTENT(OUT)                 :: Error      ! OUT: Error flag
-                                                         !      0 -> no error
-                                                         !      1 -> open file error
-                                                         !      2 -> read data error
-                                                         !      3 -> alloc error
-
-      INTEGER                         :: AllocStat       ! Allocate status
-      INTEGER                         :: IOStatus        ! I/O status
-      REAL(KIND=DP)                   :: Temp            ! Temp. storage of data
-      INTEGER                         :: I               ! Loop index
-      INTEGER                         :: Scratch_ID = 15 ! Unit ID for scratchfile
-
-      Error = 0                                          ! Set error flag -> no error
-      N = 0                                              ! Set Counter = 0
-      NULLIFY(Dat_ptr)
-
-      OPEN(Scratch_ID, STATUS='SCRATCH', IOSTAT=IOStatus)
-
-      file_io: IF (IOStatus == 0) THEN      ! successfully opened
-         handle_data: DO
-            READ(*,*, IOSTAT=IOStatus) Temp ! read from stdin/pipe ...
-            IF (IOStatus < 0) EXIT          ! EOF reached
-            count_n: IF (IOStatus > 0) THEN ! read error
-               Error = 2
-            ELSE count_n
-               N = N + 1                    ! ... count the numbers of values ...
-               WRITE(Scratch_ID,*) Temp     ! ... and write values to scratch file
-            END IF count_n
-         END DO handle_data
-      ELSE file_io
-         Error   = 1                        ! open error
-      END IF file_io
-
-      err_chk: IF (Error == 0) THEN
-         ALLOCATE(Dat_ptr(N), STAT=AllocStat)! alloc output pointer
-         alloc: IF (AllocStat /= 0) THEN     ! alloc error
-            Error = 3
-         ELSE alloc
-            REWIND(Scratch_ID)               ! Rewind scratch file
-            readin: Do I=1, N                ! Read values from scratch file and store them in Dat_ptr
-               READ(Scratch_ID,*) Dat_ptr(I)
-         END DO readin
-         END IF alloc
-      END IF err_chk
-
-   END SUBROUTINE ReadInVec
+!   SUBROUTINE ReadInVec(Dat_ptr, N, Error)
+!   ! Read in data from pipe, keyboard or command-line redirection and store the data
+!   ! in a real pointer vector.
+!      IMPLICIT NONE
+!      REAL(KIND=DP), DIMENSION(:), POINTER :: Dat_ptr    ! OUT: Data values
+!      INTEGER, INTENT(OUT)                 :: N          ! OUT: Number of values
+!      INTEGER, INTENT(OUT)                 :: Error      ! OUT: Error flag
+!                                                         !      0 -> no error
+!                                                         !      1 -> open file error
+!                                                         !      2 -> read data error
+!                                                         !      3 -> alloc error
+!
+!      INTEGER                         :: AllocStat       ! Allocate status
+!      INTEGER                         :: IOStatus        ! I/O status
+!      REAL(KIND=DP)                   :: Temp            ! Temp. storage of data
+!      INTEGER                         :: I               ! Loop index
+!      INTEGER                         :: Scratch_ID = 15 ! Unit ID for scratchfile
+!
+!      Error = 0                                          ! Set error flag -> no error
+!      N = 0                                              ! Set Counter = 0
+!      NULLIFY(Dat_ptr)
+!
+!      OPEN(Scratch_ID, STATUS='SCRATCH', IOSTAT=IOStatus)
+!
+!      file_io: IF (IOStatus == 0) THEN      ! successfully opened
+!         handle_data: DO
+!            READ(*,*, IOSTAT=IOStatus) Temp ! read from stdin/pipe ...
+!            IF (IOStatus < 0) EXIT          ! EOF reached
+!            count_n: IF (IOStatus > 0) THEN ! read error
+!               Error = 2
+!            ELSE count_n
+!               N = N + 1                    ! ... count the numbers of values ...
+!               WRITE(Scratch_ID,*) Temp     ! ... and write values to scratch file
+!            END IF count_n
+!         END DO handle_data
+!      ELSE file_io
+!         Error   = 1                        ! open error
+!      END IF file_io
+!
+!      err_chk: IF (Error == 0) THEN
+!         ALLOCATE(Dat_ptr(N), STAT=AllocStat)! alloc output pointer
+!         alloc: IF (AllocStat /= 0) THEN     ! alloc error
+!            Error = 3
+!         ELSE alloc
+!            REWIND(Scratch_ID)               ! Rewind scratch file
+!            readin: Do I=1, N                ! Read values from scratch file and store them in Dat_ptr
+!               READ(Scratch_ID,*) Dat_ptr(I)
+!         END DO readin
+!         END IF alloc
+!      END IF err_chk
+!
+!   END SUBROUTINE ReadInVec
 !----------------------------------------------------------------------
    SUBROUTINE Foo()
       IMPLICIT NONE
@@ -96,7 +97,7 @@ CONTAINS
    ! Write version information to stdout
       IMPLICIT NONE
       WRITE(*,'(/,5(A/))') &
-      'sampleSTAT - Version 1.0 - 06/28/2007',&
+      'sampleSTAT - Version 1.2 - 2020-11-07',&
       'For information, please contact: Hani Andreas Ibrahim (hani.ibrahim@gmx.de)',&
       'sampleSTAT comes with NO WARRANTY, to the extent permitted by law. You may ',&
       'redistribute copies of sampleSTAT under the terms of the GNU General Public ',&
@@ -109,7 +110,7 @@ CONTAINS
       'sampleSTAT performs tests for statistical samples:',&
       '   Aritmetic Mean, Range of Dispersion of values and mean based on t-factor,', &
       '   Standard Deviation, Minimum, Maximum.', &
-      'Usage: sampeSTAT [-hv] -l X [<inputfile] [>outputfile]',&
+      'Usage: sampleSTAT [-hv] -l X [<inputfile] [>outputfile]',&
       '  -h    --help /?   Print this help screen',&
       '  -v    --version   Print version information',&
       '  -l X  --level=X   Set confidence level:',&
@@ -128,17 +129,18 @@ CONTAINS
 
 END MODULE PrgMod
 !======================================================================
-PROGRAM sample_stat
+PROGRAM sampleSTAT
 
    USE SysConst
    USE SampleStatistics
    USE PrgMod     ! ReadInVec
    USE Sng        ! [libsng] Command-line parsing
+   USE ReadData   ! Read data from stdin
 
    IMPLICIT NONE
 
    INTEGER                                  :: I                         ! Loop index
-   INTEGER                                  :: ReadErr, AllocErr         ! error variables
+   INTEGER                                  :: ReadErr !, AllocErr         ! error variables
    REAL(KIND=DP), DIMENSION(:), POINTER     :: Values_ptr                ! Data values
    INTEGER                                  :: N                         ! Numbers of values
    INTEGER                                  :: Level = -1                ! confidence level ...
@@ -171,7 +173,7 @@ PROGRAM sample_stat
    CHARACTER(Len=*), PARAMETER              :: R_AllocError = 'Data file allocation error!'
 
    !Report strings
-   CHARACTER(Len=*), PARAMETER              :: Rpt_00       = '    ' ! left margin
+   CHARACTER(Len=*), PARAMETER              :: Rpt_00       = '' ! left margin
    CHARACTER(Len=*), PARAMETER              :: Rpt_01       = 'sampleSTAT - Statistics for Sampling Distributions'
    CHARACTER(Len=*), PARAMETER              :: Rpt_02       = '=================================================='
    CHARACTER(Len=*), PARAMETER              :: Rpt_03       = 'Number of Values            : '
@@ -258,7 +260,7 @@ PROGRAM sample_stat
       STOP
    END IF
 
-   ! Quit, if sensless options are committed ...
+   ! Quit, if senseless options are committed ...
 
 
    ! Print help- or version-screen if right option was committed
@@ -269,7 +271,7 @@ PROGRAM sample_stat
    IF (Level > 2 .OR. Level < 0) STOP LevelError                   ! Level has to be 0, 1, 2
    IF (LogLevel) THEN  !-------------------------------------------------------- Report
       ! Read in data
-      CALL ReadInVec(Values_ptr, N, ReadErr)
+      CALL ReadInData(Values_ptr, N, ReadErr)
       ! Data file error handling
       IF (ReadErr == 1) STOP R_OpnError
       IF (ReadErr == 2) STOP R_ReadError
@@ -287,23 +289,23 @@ PROGRAM sample_stat
       END IF
       ! Report message
       WRITE(*,*)
-      WRITE(*,*) Rpt_00, Rpt_01                             ! Titel
+      WRITE(*,*) Rpt_00, Rpt_01                             ! Title
       WRITE(*,*) Rpt_00, Rpt_02                             ! Underline
-      WRITE(*,'(3A,i0)') ' ', Rpt_00, Rpt_03, N             ! Numbers of values
+      WRITE(*,'(4A,i0)') ' ', Rpt_00, Rpt_03, '   ', N      ! Numbers of values
       WRITE(*,*) Rpt_00, Rpt_04, ArithMean(Values_ptr, N)   ! Mean
-      WRITE(*,'(4A)') ' ', Rpt_00, Rpt_05, TRIM(LevelMsg)   ! confidence level
+      WRITE(*,'(5A)') ' ', Rpt_00, Rpt_05, '   ', TRIM(LevelMsg)   ! confidence level
       WRITE(*,*) Rpt_00, Rpt_06, StrayAreaResult            ! Strayarea of the single values
       WRITE(*,*) Rpt_00, Rpt_07, StrayAreaResult/SQRT(REAL(N,KIND=DP))    ! TrustArea, Strayarea of mean
       WRITE(*,*) Rpt_00, Rpt_08, StdDev(Values_ptr, N)      ! Standard deviation
       WRITE(*,*) Rpt_00, Rpt_09, MinVar(Values_ptr, N)      ! Minimum
       WRITE(*,*) Rpt_00, Rpt_10, MaxVar(Values_ptr, N)      ! Maximum
-      WRITE(*,*)                                    ! Blank line after report
+      WRITE(*,*)                                            ! Blank line after report
    ELSE
       STOP OptError
    END IF
 
-! --- Deallocate all dynamic arrays and pointers
-   IF (ASSOCIATED(Values_ptr)) DEALLOCATE(Values_ptr, STAT=AllocErr)
-   IF (AllocErr /= 0) STOP DeallocError
+!! --- Deallocate all dynamic arrays and pointers
+!   IF (ASSOCIATED(Values_ptr)) DEALLOCATE(Values_ptr, STAT=AllocErr)
+!   IF (AllocErr /= 0) STOP DeallocError
 
-END PROGRAM sample_stat
+END PROGRAM sampleSTAT
