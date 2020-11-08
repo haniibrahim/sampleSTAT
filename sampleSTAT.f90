@@ -53,20 +53,21 @@ CONTAINS
 !----------------------------------------------------------------------
    SUBROUTINE Help()
    ! Write help page to stdout
-      WRITE(*,'(/,3(A/),/,7(A/),/,(3(A/)),/,(5(A/)),/)')&
+      WRITE(*,'(/,3(A/),/,7(A/),/,(4(A/)),/,(5(A/)),/)')&
       'sampleSTAT performs tests for statistical samples:',&
       '   Aritmetic Mean, Range of Dispersion of values and mean based on t-factor,', &
       '   Standard Deviation, Minimum, Maximum.', &
       'Usage: sampleSTAT [-hv] -l X [<inputfile] [>outputfile]',&
       '  -h    --help /?   Print this help screen',&
       '  -v    --version   Print version information',&
-      '  -l X  --level=X   Set confidence level:',&
-      '                    X=0 conf. level: 95%',&
-      '                    X=1 conf. level: 99%',&
-      '                    X=2 conf. level: 99.9%',&
+      '  -l P  --level=P   Set confidence level:',&
+      '                    P=95   => conf. level: 95%',&
+      '                    P=99   => conf. level: 99%',&
+      '                    P=99.9 => conf. level: 99.9%',&
       'Examples:',&
-      '  sampleSTAT -l 0 <mydata.dat',&
-      '  sampleSTAT --level=1 <mydata.dat >results.txt',&
+      '  sampleSTAT -l 95 <mydata.dat',&
+      '  sampleSTAT --level=99 <mydata.dat >results.txt',&
+      '  sampleSTAT -l 99.9 <mydata.dat',&
       'Input data:',&
       '  Data has to be committed in a one column form, like:',&
       '     22.43',&
@@ -88,15 +89,14 @@ PROGRAM sampleSTAT
 
    IMPLICIT NONE
 
-   INTEGER                                  :: I                         ! Loop index
-   INTEGER                                  :: ReadErr !, AllocErr         ! error variables
-   REAL(KIND=DP), DIMENSION(:), POINTER     :: Values_ptr                ! Data values
-   INTEGER                                  :: N                         ! Numbers of values
-   INTEGER                                  :: Level = -1                ! confidence level ...
-                                                                         ! ... for "OutlierOut" routine
-   CHARACTER(LEN=6)                         :: LevelMsg                  ! confidence level string
-!   INTEGER                                  :: MaxNum                    ! Max. numbers of lines for table of report
-   REAL(KIND=DP)                            :: StrayAreaResult           ! Stray Area of single values depending on conf. level
+   INTEGER                                  :: I                 ! Loop index
+   INTEGER                                  :: ReadErr           ! error variables
+   REAL(KIND=DP), DIMENSION(:), POINTER     :: Values_ptr        ! Data values
+   INTEGER                                  :: N                 ! Numbers of values
+   REAL(KIND=SP)                            :: Level = -1.       ! confidence level ...
+                                                                 ! ... for "OutlierOut" routine
+   CHARACTER(LEN=6)                         :: LevelMsg          ! confidence level string
+   REAL(KIND=DP)                            :: StrayAreaResult   ! Stray Area of single values depending on conf. level
   ! Command-line variables
    character(16)                            ::arg_val            ! [sng] Command line argument value
    character(16)                            ::opt_sng            ! [sng] Option string
@@ -107,8 +107,8 @@ PROGRAM sampleSTAT
 
    ! Command-line option switches
    LOGICAL                                  :: LogLevel =.FALSE. ! Value "Level" commited: true/false
-   LOGICAL                                  :: LogHlp  =.FALSE.  ! Switch "help"
-   LOGICAL                                  :: LogVer  =.FALSE.  ! Switch "version"
+   LOGICAL                                  :: LogHlp   =.FALSE. ! Switch "help"
+   LOGICAL                                  :: LogVer   =.FALSE. ! Switch "version"
 
 
    ! Error messages
@@ -135,7 +135,7 @@ PROGRAM sampleSTAT
    CHARACTER(Len=*), PARAMETER              :: Rpt_10       = 'Maximum                     : '
    CHARACTER(Len=*), PARAMETER              :: Level0Msg    = '95%'
    CHARACTER(Len=*), PARAMETER              :: Level1Msg    = '99%'
-   CHARACTER(Len=*), PARAMETER              :: Level2Msg    = '99,9%'
+   CHARACTER(Len=*), PARAMETER              :: Level2Msg    = '99.9%'
 
    ! Nullify pointer(s)
    NULLIFY(Values_ptr)
@@ -186,7 +186,6 @@ PROGRAM sampleSTAT
 
 
       ! Handle short options
-      !~ short_cmd: IF (((dsh_key1 == "-") .OR. (dsh_key1 == '/')) .AND. (dsh_key2 /= '--')) THEN
       short_cmd: IF ((dsh_key1 == "-") .AND. (dsh_key2 /= '--')) THEN
          DO i=2, opt_lng+1
             IF ((arg_val(i:i) == 'h') .OR. (arg_val(i:i) == 'H')) THEN
@@ -204,7 +203,7 @@ PROGRAM sampleSTAT
    END DO cmd_ln             ! end while (arg_idx <= arg_nbr)
 
 ! --- Examine committed options, read in and proceed data
-   IF (arg_nbr == 0) THEN                                       ! If no arguments are committed display version and help info
+   IF (arg_nbr == 0) THEN ! If no arguments are committed display version and help info
       CALL Help()
       STOP
    END IF
@@ -217,7 +216,11 @@ PROGRAM sampleSTAT
    IF (LogVer) CALL Version()
    IF (LogHlp .OR. LogVer) STOP ! Avoid further processing after print help or version
 
-   IF (Level > 2 .OR. Level < 0) STOP LevelError                   ! Level has to be 0, 1, 2
+   ! Check committed options for "l" or "level"
+   IF (( .NOT.(Level >= 0 .AND. Level <= 2)) .AND. ((Level .NE. 95) .AND. (Level .NE. 99) .AND. (Level .NE. 99.9))) THEN
+       STOP LevelError
+   END IF
+
    IF (LogLevel) THEN  !-------------------------------------------------------- Report
       ! Read in data
       CALL ReadInData(Values_ptr, N, ReadErr)
@@ -226,13 +229,13 @@ PROGRAM sampleSTAT
       IF (ReadErr == 2) STOP R_ReadError
       IF (ReadErr == 3) STOP R_AllocError
       ! confidence level messages for report
-      IF (Level == 0) THEN ! Strayarea of the single values, stat. sec. 95%
+      IF ((Level == 0) .OR. (Level == 95)) THEN ! Strayarea of the single values, stat. sec. 95%
          LevelMsg = Level0Msg
          StrayAreaResult = StrayArea(Values_ptr, N, 'lo')
-      ELSE IF (Level == 1) THEN ! Strayarea of the single values, stat. sec. 99%
+      ELSE IF ((Level == 1) .OR. (Level == 99)) THEN ! Strayarea of the single values, stat. sec. 99%
          LevelMsg = Level1Msg
          StrayAreaResult = StrayArea(Values_ptr, N, 'md')
-      ELSE IF (Level == 2) THEN ! Strayarea of the single values, stat. sec. 99,9%
+      ELSE IF ((Level == 2) .OR. (Level == 99.9)) THEN ! Strayarea of the single values, stat. sec. 99,9%
          LevelMsg = Level2Msg
          StrayAreaResult = StrayArea(Values_ptr, N, 'hi')
       END IF
