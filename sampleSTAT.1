@@ -1,0 +1,149 @@
+.\"Created with GNOME Manpages Editor Wizard
+.\"http://sourceforge.net/projects/gmanedit2
+.TH sampleSTAT 1 "November 7, 2020" "" "sampleSTAT"
+
+.SH NAME
+sampleSTAT \- Statistical analysis of univariate data
+
+.SH SYNOPSIS
+.B sampleSTAT
+[\fI\,OPTIONS\/\fR]...  \fI\,[<DATASOURCE] [>RESULT]\/\fR
+.br
+
+.SH DESCRIPTION
+\fBsampleSTAT\fP provides elementary tests for the evaluation of univariate measurement data that are typically recorded by scientists and engineers. These data have to be normally distributed.
+
+It provides calculations of the range of values and the mean with respect to a given statistical confidence level. 
+
+The following tests will be performed:
+
+- Arithmetic Mean
+.br
+- Sample Standard Deviation
+.br
+- Range of Dispersion of Values (stray area of the values)
+.br
+- Range of Dispersion of Mean (trust area of the mean)
+.br
+- Minimum Value
+.br
+- Maximum Value
+
+Find a description of the tests below.
+
+.SH OPTIONS
+.TP
+\fB\-l\fR \fICONFIDENCE_LEVEL_(P)\fR, \fB\-\-level\fR=\fICONFIDENCE_LEVEL_(P)\fR
+Statistical confidence level P (95%, 99% or 99.9%):
+.br
+P=95    =>   confidence level: 95%
+.br
+P=99    =>   confidence level: 99%
+.br
+P=99.9  =>   confidence level: 99.9%
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help screen
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print version information
+.TP
+\fB\<DATASOURCE\fR
+Redirection of the datasource, e.g. a datafile, to \fIstdin\fR for reading. This option is optional. 
+
+You can omit this option and type the data to \fIstdin\fR instead. When you finished you press CTRL-D.
+.TP
+\fB\<RESULT\fR
+Redirection of the result to e.g. a file. This option is optional. Otherwise \fBsampleSTAT\fR will print the result to the screen.
+
+.SH EXAMPLES
+sampleSTAT -l 95 <mydata.dat
+.br
+sampleSTAT --level=99 <mydata.dat >results.txt
+.br
+sampleSTAT -l 99.9 <mydata.dat
+
+.SH INPUT DATA
+Data can be committed via file (redirection to \fIstdin\fR), pipe or keyboard. The format of the data has to be 1-dimensional \fIcomma-separated-value\fR. Committed  as a row vector and the decimal separator has to be a point, e.g:
+
+22.43
+.br
+22.45
+.br
+22.50
+
+.SH OUTPUT
+Print the results of the perfomed calculations in a table to \fIstdout\fR, e.g.:
+
+ sampleSTAT - Statistics for Sampling Distributions
+.br
+ ==================================================
+.br
+ Number of Values            :    6
+.br
+ Arithmetic Mean             :    10.000000000000000     
+.br
+ Confidence Level            :    95%
+.br
+ Range of Dispersion (values):    3.6345288507107026E-003
+.br
+ Range of Dispersion (mean)  :    1.4837901899442333E-003
+.br
+ Standard Deviation          :    1.4142135605878221E-003
+.br
+ Minimum                     :    9.9979999999999993     
+.br
+ Maximum                     :    10.002000000000001  
+
+Write as a result:
+.br
+x = 10.0; T = +/-3.63 for P = 95%; s = +/-1.41
+
+.SH DESCRIPTION OF THE STATISTICAL RESULTS
+If you are collecting data on a process, it is important to determine not only the location of the mean, but also to look at the variation within the data. If you are, for example, interpreting the results of a chemical analysis, you may put much more emphasis on the obtained average value if you know that the individual samples vary only very little in comparison to the mean.
+
+In general, the spread of a distribution, both in absolute and in relative terms, is a good measure of the variability (and hence reliability) of the data. There are several ways to specify the variation in the data. \fBsampleSTAT\fR provides you more information of your data as just mean, median and standard deviation can do.
+.SS
+Arithmetic Mean (x)
+The arithmetic mean is the best and significant approach to specify an result when it will used numerically. For its alone it does not say anything about the quality of the result. An artithmetic mean of 10 can be generated from both examples below:
+
+Sample 1 	Sample 2
+.br
+6 	     9.999
+.br
+8 	     9.998
+.br
+14 	    10.002
+.br
+12 	    10.000
+.br
+5        10.001
+.br
+15       10.000
+.br
+.SS
+Confidence Level
+The confidence level is the percentage of times you expect to reproduce an estimate between the upper and lower bounds of the confidence interval.
+.SS
+Number of Values (N)
+The amount of single values (N) is a important degree to evaluate the security of the result. N specify the measuring expenditure but N itself has no significance to the the result. In both examples above N was the same.
+.SS
+Sample Standard Deviation (s)
+The standard deviation is the most informative quantity to specify the statistic quality of a measuring procedure. With a probability of 68% the values will stray with +/- s around the mean. But s itself does not say anything about the quality of the result but in combination with n you can calculate the range of dispersion.
+.SS
+Range of Dispersion of Values (T) - stray area of the values
+The range of dispersion of the values is calculated as T = s * t. t is the student factor, dependent on the statistic security/confidence level P% (95%, 99%, 99.9%) and the degree of freedom f = n - 1. f and t are specified in the t-tables. T indicates that P% of all single values - with x as its mean - are expected around x + T and x - T. T is the parameter which specify the quality of the raw values.
+.SS
+Range of Dispersion of Mean - trust area of the mean
+This parameter tells how secure the mean is. It indicates the stray area of the mean and not of the raw values as T does. The mean will stray with a probability of P% around the mean.
+
+.SH AUTHOR
+sampleSTAT was written by Hani Ibrahim.
+
+.SH
+Bibliography
+R. Kaiser, G. Gottschalk; "Elementare Tests zur Beurteilung von Meßdaten", BI Hochschultaschenbücher, Bd. 774, Mannheim 1972.
+
+.SH LICENSE
+GNU Public License Version 3 - \<http://www.gnu.org/licenses/\>
+

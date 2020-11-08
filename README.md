@@ -7,7 +7,7 @@ sampleSTAT is based on the German book *R. Kaiser, G. Gottschalk; "Elementare Te
 ## Purpose ##
 Performs statistical tests for sampling distributions:
 - Arithmetic Mean
-- Standard Deviation
+- Sample Standard Deviation
 - Range of Dispersion of Values
 - Range of Dispersion of Mean
 - Minimum Value
@@ -62,14 +62,15 @@ sampleSTAT performs tests for statistical samples:
 Usage: sampeSTAT [-hv] -s X [<inputfile] [>outputfile]
   -h    --help /?   Print this help screen
   -v    --version   Print version information
-  -l X  --level=X   Set confidence level:
-                    X=0 conf. level: 95%
-                    X=1 conf. level: 99%
-                    X=2 conf. level: 99.9%
+  -l P  --level=P   Set confidence level:
+                    P=95   conf. level: 95%
+                    P=99   conf. level: 99%
+                    P=99.9 conf. level: 99.9%
 
 Examples:
-  sampleSTAT -l 0 <mydata.dat
-  sampleSTAT --level=1 <mydata.dat >results.txt
+  sampleSTAT -l 95 <mydata.dat
+  sampleSTAT --level=99 <mydata.dat >results.txt
+  sampleSTAT -l 99.9 <mydata.dat
 
 Input data:
   Data has to be committed in a one column form, like:
@@ -93,16 +94,16 @@ sample1.dat:
 ```
 $ sampleSTAT -l 0 <sample1.dat
 
-     sampleSTAT - Statistics for Sampling Distributions
-     ==================================================
-     Number of Values            :    6
-     Arithmetic Mean             :    10.000000000000000
-     Confidence Level            :    95%
-     Range of Dispersion (values):    10.903586565896561
-     Range of Dispersion (mean)  :    4.4513705754520139
-     Standard Deviation          :    4.2426406871192848
-     Minimum                     :    5.0000000000000000
-     Maximum                     :    15.000000000000000
+ sampleSTAT - Statistics for Sampling Distributions
+ ==================================================
+ Number of Values            :    6
+ Arithmetic Mean             :    10.000000000000000
+ Confidence Level            :    95%
+ Range of Dispersion (values):    10.903586565896561
+ Range of Dispersion (mean)  :    4.4513705754520139
+ Standard Deviation          :    4.2426406871192848
+ Minimum                     :    5.0000000000000000
+ Maximum                     :    15.000000000000000
 ```
 
 Write for sample 1:
@@ -146,4 +147,7 @@ gfortran -static dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samples
 ```
 For a quick and dirty installation, copy `sampleSTAT.exe` into your Windows folder or much better in another folder which is in your path.
 
-With linker option `-static` sampleSTAT should run on other machines without gfortran's and gcc's libraries installed.
+With the linker option `-static` sampleSTAT should run on other machines without dependencies to gfortran's and gcc's libraries.
+
+## Download binaries ##
+Some precompiled binaries for some platforms are located in the [Release section](https://github.com/haniibrahim/sampleSTAT/releases).
