@@ -133,7 +133,7 @@ To compile and install sampleSTAT on UNIX(-like) systems with gfortran:
 ```
 gfortran -static dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
-sudo cp ./sampleSTAT.1 /usr/local/share/man1/
+sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 ```
 
 or easier via make:
@@ -148,7 +148,7 @@ On macOS:
 ```
 gfortran -static-libgfortran -static-libgcc dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
-sudo cp ./sampleSTAT.1 /usr/local/share/man1/
+sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 ```
 
 or

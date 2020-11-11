@@ -37,4 +37,4 @@ sampleSTAT: $(OBJ)
 	$(LD) $(OBJ) -o sampleSTAT  $(LDFLAGS)
 install:
 	sudo cp ./sampleSTAT /usr/local/bin/
-	sudo cp ./sampleSTAT.1 /usr/local/share/man1/
+	sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
