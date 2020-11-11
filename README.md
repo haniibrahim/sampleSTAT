@@ -122,6 +122,10 @@ To compile this app you just need a Fortran 90 compiler with the Fortran 2003 ro
 
 Compatible compilers are gfortran, g95, ifort and many more. You can compile and run sampleSTAT on almost all platforms (GNU/Linux, Microsoft Windows, Mac OS X, BSD, etc.)
 
+Furthermore to have "make" is useful but not mandatory.
+
+On **GNU/Linux** you need "gfortran" and "make". On **macOS** you should use *Homebrew* or *MacPorts* to install "gfortran" and "make". To build sampleSTAT on **Windows** you should have *mingw32*, *mingw64* or *Cygwin* installed.
+
 ## Build and Install ##
 
 To compile and install sampleSTAT on UNIX(-like) systems with gfortran:
@@ -129,19 +133,29 @@ To compile and install sampleSTAT on UNIX(-like) systems with gfortran:
 ```
 gfortran -static dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
+sudo cp ./sampleSTAT.1 /usr/local/share/man1/
 ```
 
 or easier via make:
 
 ```
-make
-sudo make install
+make -f makefile.linux
+sudo make -f makefile.linux install
 ```
 
-To uninstall:
+On macOS:
 
 ```
-sudo make uninstall
+gfortran -static-libgfortran -static-libgcc dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
+sudo cp ./sampleSTAT /usr/local/bin/
+sudo cp ./sampleSTAT.1 /usr/local/share/man1/
+```
+
+or
+
+```
+make -f makefile.mac
+sudo make -f makefile.mac install
 ```
 
 On Microsoft Windows:
