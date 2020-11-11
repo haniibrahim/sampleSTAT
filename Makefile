@@ -34,3 +34,9 @@ tags: $(SRC)
 	ctags $(SRC)
 sampleSTAT: $(OBJ) 
 	$(LD) $(OBJ) -o sampleSTAT  $(LDFLAGS)
+install:
+	cp sampleSTAT /usr/local/bin/
+	cp sampleSTAT.1 /usr/local/man/man1/
+uninstall:
+	rm -f /usr/local/bin/sampleSTAT
+	rm -f /usr/local/man/man1/sampleSTAT.1

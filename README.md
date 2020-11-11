@@ -114,8 +114,6 @@ x = 10.0; T = +/-10.9 for P = 95%; s = +/-4.243
 Result in words:
 *In the given sample distribution (sample 1) 95% of all values will be between 0 and 20.9 (range of dispersion of the values) but 68% between 5.8 and 14.2 (standard deviation). The mean "x" itself can spread between 14.08 and 5.92 (range of dispersion of the mean).*
 
-
-
 Note: 6 values in this example are too less to give a proper view for 95% of all.
 
 ## Requirements ##
@@ -140,6 +138,12 @@ make
 sudo make install
 ```
 
+To uninstall:
+
+```
+sudo make uninstall
+```
+
 On Microsoft Windows:
 
 ```
@@ -148,6 +152,10 @@ gfortran -static dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samples
 For a quick and dirty installation, copy `sampleSTAT.exe` into your Windows folder or much better in another folder which is in your path.
 
 With the linker option `-static` sampleSTAT should run on other machines without dependencies to gfortran's and gcc's libraries.
+
+## Usage ##
+
+See example section above or type `man sampleSTAT` after installation.
 
 ## Download binaries ##
 Some precompiled binaries for some platforms are located in the [Release section](https://github.com/haniibrahim/sampleSTAT/releases).
