@@ -59,7 +59,7 @@ CONTAINS
       'sampleSTAT performs tests for statistical samples:',&
       '   Aritmetic Mean, Range of Dispersion of values and mean based on t-factor,', &
       '   Standard Deviation, Minimum, Maximum.', &
-      'Usage: sampleSTAT [-hv] -l X [<inputfile] [>outputfile]',&
+      'Usage: sampleSTAT [-hv] [-l P] [<inputfile] [>outputfile]',&
       '  -h    --help /?   Print this help screen',&
       '  -v    --version   Print version information',&
       '  -l P  --level=P   Set confidence level:',&
