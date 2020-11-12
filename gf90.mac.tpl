@@ -1,6 +1,7 @@
 # MAC template
 # gfortran template file for mkmf
-# mkmf -p sampleSTAT -t gf90.mac.tpl -m makefile.mac
+# mkmf -p sampleSTAT -t gf90.mac.tpl -m makefile.mac.mak
+# make -f makefile.mac.mak
 
 FC = gfortran
 LD = gfortran

@@ -76,6 +76,8 @@ module sng_mdl ! [mdl] String manipulation
   use SysConst
 
   implicit none
+  
+  INTEGER :: stderr ! stderr unit
 
   public ! [stt] Symbols are public unless individually qualified as private
   private::ftn_arg_get_dbl,ftn_arg_get_int,ftn_arg_get_lgc,ftn_arg_get_sng

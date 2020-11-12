@@ -31,6 +31,8 @@ MODULE PrgMod
     USE SampleStatistics
 
     IMPLICIT NONE
+	
+	INTEGER :: stderr ! stderr unit
 
 CONTAINS
 

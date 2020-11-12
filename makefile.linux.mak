@@ -20,9 +20,9 @@ sng_mdl.o: ./sng_mdl.F90 sysconst_mdl.o dbg_mdl.o
 	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FPPFLAGS) $(FFLAGS) $(OTHERFLAGS) -c	./sng_mdl.F90
 sngall_mdl.o: ./sngall_mdl.F90 dbg_mdl.o sng_mdl.o
 	$(FC) $(CPPDEFS) $(CPPFLAGS) $(FPPFLAGS) $(FFLAGS) $(OTHERFLAGS) -c	./sngall_mdl.F90
-sysconst_mdl.o: ./sysconst_mdl.f90
-	$(FC) $(FFLAGS) $(OTHERFLAGS) -c	./sysconst_mdl.f90
-SRC = ./dbg_mdl.F90 ./samplestatistics_mdl.f90 ./sampleSTAT.f90 ./readdata_mdl.f90 ./sysconst_mdl.f90 ./sng_mdl.F90 ./sngall_mdl.F90
+sysconst_mdl.o: ./sysconst_mdl.F90
+	$(FC) $(FFLAGS) $(OTHERFLAGS) -c	./sysconst_mdl.F90
+SRC = ./dbg_mdl.F90 ./samplestatistics_mdl.f90 ./sampleSTAT.f90 ./readdata_mdl.f90 ./sysconst_mdl.F90 ./sng_mdl.F90 ./sngall_mdl.F90
 OBJ = dbg_mdl.o samplestatistics_mdl.o sampleSTAT.o readdata_mdl.o sysconst_mdl.o sng_mdl.o sngall_mdl.o
 clean: neat
 	-rm -f .sampleSTAT.cppdefs $(OBJ) sampleSTAT

@@ -1,7 +1,7 @@
 # Linux template
 # gfortran template file for mkmf
-# mkmf -p sampleSTAT -t gf90.linux.tpl -m makefile.linux.mak
-# make -f makefile.linux.mak
+# mkmf -p sampleSTAT -t gf90.win.tpl -m makefile.linux.mak
+# make -f makefile.win.mak
 
 FC = gfortran
 LD = gfortran

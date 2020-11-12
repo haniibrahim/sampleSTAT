@@ -25,7 +25,7 @@ The arithmetic mean is the best and significant approach to specify an result wh
 |         5 |    10.001 |
 |        15 |    10.000 |
 
-### Number of Values (N)###
+### Number of Values (N) ###
 
 The amount of single values (N) is a important degree to evaluate the security of the result. N specify the measuring expenditure but N itself has no significance to the the result. In both examples above N was the same.
 
@@ -52,7 +52,7 @@ It uses [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point) *(IEEE Sta
 
 ## Usage ##
 
-Type `sampleSTAT --help` for help:
+Open a terminal on UNIX or CMD.EXE on Windows® and type `sampleSTAT --help` for help:
 
 ```
 sampleSTAT performs tests for statistical samples:
@@ -118,7 +118,9 @@ Note: 6 values in this example are too less to give a proper view for 95% of all
 
 ## Requirements ##
 
-To compile this app you just need a Fortran 90 compiler with the Fortran 2003 routines `command_argument_count()` and `get_command_argument()` or the often available but non-standard `iargc()` and `getarg()` routines.
+To **run** *sampleSTAT* you do not have to take care of any library dependencies.
+
+To **build** this app you just need a Fortran 90 compiler with the Fortran 2003 routines `command_argument_count()` and `get_command_argument()` or the often available but non-standard `iargc()` and `getarg()` routines.
 
 Compatible compilers are gfortran, g95, ifort and many more. You can compile and run sampleSTAT on almost all platforms (GNU/Linux, Microsoft Windows, Mac OS X, BSD, etc.)
 
@@ -131,7 +133,7 @@ On **GNU/Linux** you need "gfortran" and "make". On **macOS** you should use *Ho
 To compile and install sampleSTAT on UNIX(-like) systems with gfortran:
 
 ```
-gfortran -static dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
+gfortran -static sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
 sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 ```
@@ -139,14 +141,14 @@ sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 or easier via make:
 
 ```
-make -f makefile.linux
-sudo make -f makefile.linux install
+make -f makefile.linux.mak
+sudo make -f makefile.linux.mak install
 ```
 
 On macOS:
 
 ```
-gfortran -static-libgfortran -static-libgcc dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
+gfortran -static-libgfortran -static-libgcc sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
 sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 ```
@@ -154,15 +156,22 @@ sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 or
 
 ```
-make -f makefile.mac
-sudo make -f makefile.mac install
+make -f makefile.mac.mak
+sudo make -f makefile.mac.mak install
 ```
 
 On Microsoft Windows:
 
 ```
-gfortran -static dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 sysconst_mdl.f90 samplestatistics_mdl.f90 sampleSTAT.f90 readdata_mdl.f90 -o sampleSTAT.exe
+gfortran -static sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 sampleSTAT.f90 readdata_mdl.f90 -o sampleSTAT.exe
 ```
+
+or
+
+```
+make -f makefile.win.mak
+```
+
 For a quick and dirty installation, copy `sampleSTAT.exe` into your Windows folder or much better in another folder which is in your path.
 
 With the linker option `-static` sampleSTAT should run on other machines without dependencies to gfortran's and gcc's libraries.
