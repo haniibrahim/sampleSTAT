@@ -79,6 +79,9 @@ Input data:
      22.50
 
 ```
+
+or type `man sampleSTAT` on UNIX(-like) systems or macOS after installation. On Windows refer `sampleSTAT.html` or `README.md` which are in the (binary) distribution instead.
+
 ### Examples
 
 sample1.dat:
@@ -116,7 +119,7 @@ Result in words:
 
 ## Requirements ##
 
-To **run** *sampleSTAT* you do not have to take care of any library dependencies.
+To **run** *sampleSTAT* you do not have to take care of any library dependencies. Binaries for Windows, GNU/Linux and macOS can be found in the [Release section](https://github.com/haniibrahim/sampleSTAT/releases).
 
 To **build** this app you just need a Fortran 90 compiler with the Fortran 2003 routines `command_argument_count()` and `get_command_argument()` or the often available but non-standard `iargc()` and `getarg()` routines.
 
@@ -128,10 +131,12 @@ On **GNU/Linux** you need "gfortran" and "make". On **macOS** you should use *Ho
 
 ## Build and Install ##
 
+### On UNIX(-like) systems ###
+
 To compile and install sampleSTAT on UNIX(-like) systems with gfortran:
 
 ```
-gfortran -static sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
+gfortran -O3 -s -static sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
 sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 ```
@@ -143,10 +148,10 @@ make -f makefile.linux.mak
 sudo make -f makefile.linux.mak install
 ```
 
-On macOS:
+### On macOS ###
 
 ```
-gfortran -static-libgfortran -static-libgcc sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 -o sampleSTAT
+gfortran -O3 -s -static-libgfortran -static-libgcc sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 readdata_mdl.f90 sampleSTAT.f90 /opt/local/lib/gcc9/libquadmath.a -o sampleSTAT
 sudo cp ./sampleSTAT /usr/local/bin/
 sudo cp ./sampleSTAT.1 /usr/local/share/man/man1/
 ```
@@ -158,10 +163,12 @@ make -f makefile.mac.mak
 sudo make -f makefile.mac.mak install
 ```
 
-On Microsoft Windows:
+**IMPORTANT NOTE**: On macOS you have to adjust the path `/opt/local/lib/gcc9/libquadmath.a` in your commandline or in the file `gf90.mac.tpl` to your current environmemt. You can omit this path and the two `-static-...` options if you want. You just loose your independency to a gfortran installation.
+
+### On Microsoft Windows ###
 
 ```
-gfortran -static sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 sampleSTAT.f90 readdata_mdl.f90 -o sampleSTAT.exe
+gfortran -O3 -s -static sysconst_mdl.F90 dbg_mdl.F90 sng_mdl.F90 sngall_mdl.F90 samplestatistics_mdl.f90 sampleSTAT.f90 readdata_mdl.f90 -o sampleSTAT.exe
 ```
 
 or
@@ -173,10 +180,6 @@ make -f makefile.win.mak
 For a quick and dirty installation, copy `sampleSTAT.exe` into your Windows folder or much better in another folder which is in your path.
 
 With the linker option `-static` sampleSTAT should run on other machines without dependencies to gfortran's and gcc's libraries.
-
-## Usage ##
-
-See example section above or type `man sampleSTAT` after installation.
 
 ## Download binaries ##
 Some precompiled binaries for some platforms are located in the [Release section](https://github.com/haniibrahim/sampleSTAT/releases).
